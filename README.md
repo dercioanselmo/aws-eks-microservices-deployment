@@ -90,8 +90,7 @@ The Terraform project responsible for provisioning and configuring the platform 
 **Applications** — Kubernetes workloads, Helm releases, ingress resources, GitOps-managed deployments, and production retail microservices deployed into the EKS platform.
 
 
-tree -a
-.
+```bash
 ├── 01_EKS_Cluster_Environment
 │   ├── 01_VPC_terraform-manifests
 │   │   ├── c1-versions.tf
@@ -209,3 +208,4 @@ tree -a
     │   │   └── c9_07_orders_aws_sqs_iam_policy.tf
     │   ├── create-aws-dataplane.sh
     │   └── delete-aws-dataplane.sh
+    ```
