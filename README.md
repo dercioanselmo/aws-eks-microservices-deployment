@@ -1,18 +1,37 @@
 # Retail Store Microservices Production Deployment
 
-This project provisions a production-grade microservices platform for a retail store system, engineered on AWS using Terraform-based Infrastructure as Code (IaC) with a remote state backend in Amazon S3. The platform is designed to meet real-world requirements for scalability, high availability, security, and continuous delivery.
-The infrastructure is built on a multi-AZ VPC architecture, with segregated public and private subnets to ensure secure and resilient communication across services. The core compute layer is powered by Amazon EKS (Elastic Kubernetes Service), provisioned with a highly available node distribution across Availability Zones to support fault tolerance and workload isolation.
-
-A full DevOps lifecycle is implemented, combining CI/CD pipelines with GitHub Actions and GitOps-driven deployments through ArgoCD and Argo Rollouts, enabling controlled, progressive delivery strategies. Container images are managed in Amazon ECR, ensuring secure and efficient artifact storage and distribution.
-
-The Kubernetes environment is extended with critical components such as Karpenter for dynamic node scaling, Horizontal Pod Autoscaling (HPA) for workload elasticity, and ExternalDNS integrated with Amazon Route 53 for automated service discovery. Secure configuration and secret handling are managed through AWS Secrets Manager and fine-grained IAM roles and policies.
-
-The platform integrates multiple AWS managed services to support application functionality, including Amazon RDS (MySQL and PostgreSQL) for relational data, Amazon DynamoDB for NoSQL workloads, Amazon ElastiCache for caching, and Amazon SQS for asynchronous messaging and decoupled service communication.
-
-End-to-end observability is achieved using AWS Distro for OpenTelemetry, Amazon CloudWatch, and Amazon Managed Prometheus and Grafana, providing comprehensive monitoring, logging, and tracing across the system.
-
-This implementation reflects a fully automated, resilient, and scalable cloud-native architecture, aligned with enterprise-grade DevOps and platform engineering practices.
-
+Production-grade cloud-native retail platform deployed on AWS using Terraform-based Infrastructure as Code (IaC) with remote state management in Amazon S3. The platform is designed for high availability, scalability, security, and fully automated continuous delivery.
+#### Core Infrastructure
+ - Amazon VPC across 3 Availability Zones
+ - Public and Private subnet segmentation
+ - Internet Gateway + Multi-AZ NAT Gateways
+ - Amazon EKS cluster with multi-AZ worker nodes
+ - AWS IAM Roles and Policies
+ - AWS Secrets Manager
+#### Kubernetes Platform Components
+ - AWS Load Balancer Controller
+ - Karpenter dynamic node provisioning
+ - Horizontal Pod Autoscaler (HPA)
+ - ExternalDNS with Amazon Route 53
+ - Helm-based application deployments
+ 
+#### Dataplane Services
+ - Amazon RDS MySQL
+ - Amazon RDS PostgreSQL
+ - Amazon DynamoDB
+ - Amazon ElastiCache Redis
+ - Amazon SQS
+ #### DevOps & GitOps
+ - Terraform infrastructure provisioning
+ - GitHub Actions CI/CD pipelines
+ - ArgoCD GitOps deployments
+ - Argo Rollouts for progressive delivery
+ - Amazon ECR container registry
+#### Observability Stack
+ - AWS Distro for OpenTelemetry
+ - Amazon CloudWatch
+ - Amazon Managed Prometheus
+ - Amazon Managed Grafana
 ---
 
 ## Implementation
@@ -88,6 +107,7 @@ The Terraform project responsible for provisioning and configuring the platform 
 **Dataplane** — Provisioning of managed AWS backend services supporting the microservices platform, including Amazon RDS MySQL, Amazon RDS PostgreSQL, DynamoDB, ElastiCache Redis, and Amazon SQS for persistence, caching, and asynchronous messaging workloads.
 
 **Applications** — Kubernetes workloads, Helm releases, ingress resources, GitOps-managed deployments, and production retail microservices deployed into the EKS platform.
+
 
 
 ```bash
@@ -208,4 +228,4 @@ The Terraform project responsible for provisioning and configuring the platform 
     │   │   └── c9_07_orders_aws_sqs_iam_policy.tf
     │   ├── create-aws-dataplane.sh
     │   └── delete-aws-dataplane.sh
-    ```
+```
