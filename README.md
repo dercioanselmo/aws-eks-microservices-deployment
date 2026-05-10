@@ -34,6 +34,7 @@ TODO: Show the VPC output lines of Remote state file used in the next deployment
 ```
 ### Retail Store Microservices Application Stack
 ![Retail Store Microservices Application Stack](images/02_retail_application.png)
+
 Microservices-based retail web platform deployed on Amazon EKS, composed of independently scalable and loosely coupled services.
 #### Microservices Layer
  - **Catalog Service** — Golang-based microservice responsible for product catalog management and inventory retrieval.
@@ -51,6 +52,7 @@ Microservices-based retail web platform deployed on Amazon EKS, composed of inde
  - **Amazon SQS** — Managed asynchronous messaging service enabling decoupled inter-service communication and event-driven workload processing.
 ### VPC
 ![Retail Store Microservices Application Stack](images/03_VPC.png)
+
 The platform network layer is built within a dedicated AWS VPC using the CIDR block 10.0.0.0/16. The VPC is distributed across three Availability Zones to ensure high availability, fault tolerance, and resilient service communication.
 The network topology comprises:
  - 3 Public Subnets distributed across 3 AZs 
@@ -75,6 +77,7 @@ The terraform project source code that defines VPC have the following structure:
 
 ### EKS Cluster
 ![EKS Cluster](images/04_EKS.png)
+
 The diagram above illustrates the high-level architecture and operational components of the Amazon EKS platform provisioned through Terraform. The environment consists of an AWS-managed Kubernetes control plane distributed across multiple Availability Zones, initially backed by three EC2 On-Demand worker nodes forming the primary compute layer for containerized workloads.
 The Terraform project responsible for provisioning and configuring the platform is organized into the following major infrastructure domains:
 
