@@ -1,8 +1,0 @@
-apiVersion: v2
-appVersion: 1.3.0
-description: Modified Helm chart for AWS EKS course (based on aws-containers/retail-store-sample-app)
-name: retail-store-sample-catalog-chart
-sources:
-- https://github.com/aws-containers/retail-store-sample-app
-type: application
-version: 1.0.0

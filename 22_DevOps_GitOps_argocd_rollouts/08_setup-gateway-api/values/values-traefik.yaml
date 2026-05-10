@@ -2,15 +2,25 @@
 ports:
   web:
     port: 80
-    nodePort: 30000
-    # No redirection to HTTPS
+    # nodePort is ignored when using LoadBalancer
+
+  traefik:                  # Dashboard / API port
+    port: 8080
+    expose:
+      default: true
+    # nodePort: 30002     # Only uncomment if you use NodePort type
 
 # Enable Dashboard
 api:
   dashboard: true
-  insecure: true # Exposes dashboard on port 8080 (container port)
+  insecure: true
 
-# Expose Dashboard via Traefik itself on HTTP
+# Service Type
+service:
+  enabled: true
+  spec:
+    type: LoadBalancer      # ← This is what we want now
+
 ingressRoute:
   dashboard:
     enabled: true
@@ -27,7 +37,6 @@ providers:
   kubernetesGateway:
     enabled: true
 
-# Gateway Listeners
 gateway:
   listeners:
     web:
