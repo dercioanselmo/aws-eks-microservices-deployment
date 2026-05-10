@@ -51,6 +51,8 @@ Execute the terraform init, validate, plan, and apply -auto-approve. Wait for th
 ```bash
 TODO: Show the VPC output lines of Remote state file used in the next deployment
 ```
+### VPC
+![Retail Store Microservices Application Stack](images/03_VPC.png)
 
 The platform network layer is built within a dedicated AWS VPC using the CIDR block 10.0.0.0/16. The VPC is distributed across three Availability Zones to ensure high availability, fault tolerance, and resilient service communication.
 The network topology comprises:
@@ -228,6 +230,3 @@ Microservices-based retail web platform deployed on Amazon EKS, composed of inde
  - **Amazon ElastiCache Redis** — In-memory distributed caching layer used for low-latency data access, session acceleration, and performance optimization.
 #### Messaging Layer
  - **Amazon SQS** — Managed asynchronous messaging service enabling decoupled inter-service communication and event-driven workload processing.
-### VPC
-![Retail Store Microservices Application Stack](images/03_VPC.png)
-
