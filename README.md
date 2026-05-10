@@ -51,26 +51,6 @@ Execute the terraform init, validate, plan, and apply -auto-approve. Wait for th
 ```bash
 TODO: Show the VPC output lines of Remote state file used in the next deployment
 ```
-### Retail Store Microservices Application Stack
-![Retail Store Microservices Application Stack](images/02_retail_application.png)
-
-Microservices-based retail web platform deployed on Amazon EKS, composed of independently scalable and loosely coupled services.
-#### Microservices Layer
- - **Catalog Service** — Golang-based microservice responsible for product catalog management and inventory retrieval.
- - **Cart Service** — Java Spring Boot service handling shopping cart state management and session operations.
- - **Checkout Service** — Node.js microservice responsible for order processing and transaction orchestration.
- - **Orders Service** — Java Spring Boot service managing order lifecycle, persistence, and order state transitions.
- - **UI Service** — Java Spring Boot frontend application serving the customer-facing retail interface.
-#### Data Layer
- - **Amazon RDS MySQL** — Relational database supporting transactional application workloads.
- - **Amazon RDS PostgreSQL** — Relational database used for service-specific persistent storage requirements.
- - **Amazon DynamoDB** — Fully managed NoSQL database supporting high-scale low-latency key-value access patterns.
-#### Caching Layer
- - **Amazon ElastiCache Redis** — In-memory distributed caching layer used for low-latency data access, session acceleration, and performance optimization.
-#### Messaging Layer
- - **Amazon SQS** — Managed asynchronous messaging service enabling decoupled inter-service communication and event-driven workload processing.
-### VPC
-![Retail Store Microservices Application Stack](images/03_VPC.png)
 
 The platform network layer is built within a dedicated AWS VPC using the CIDR block 10.0.0.0/16. The VPC is distributed across three Availability Zones to ensure high availability, fault tolerance, and resilient service communication.
 The network topology comprises:
@@ -229,3 +209,25 @@ The Terraform project responsible for provisioning and configuring the platform 
     │   ├── create-aws-dataplane.sh
     │   └── delete-aws-dataplane.sh
 ```
+
+### Retail Store Microservices Application Stack
+![Retail Store Microservices Application Stack](images/02_retail_application.png)
+
+Microservices-based retail web platform deployed on Amazon EKS, composed of independently scalable and loosely coupled services.
+#### Microservices Layer
+ - **Catalog Service** — Golang-based microservice responsible for product catalog management and inventory retrieval.
+ - **Cart Service** — Java Spring Boot service handling shopping cart state management and session operations.
+ - **Checkout Service** — Node.js microservice responsible for order processing and transaction orchestration.
+ - **Orders Service** — Java Spring Boot service managing order lifecycle, persistence, and order state transitions.
+ - **UI Service** — Java Spring Boot frontend application serving the customer-facing retail interface.
+#### Data Layer
+ - **Amazon RDS MySQL** — Relational database supporting transactional application workloads.
+ - **Amazon RDS PostgreSQL** — Relational database used for service-specific persistent storage requirements.
+ - **Amazon DynamoDB** — Fully managed NoSQL database supporting high-scale low-latency key-value access patterns.
+#### Caching Layer
+ - **Amazon ElastiCache Redis** — In-memory distributed caching layer used for low-latency data access, session acceleration, and performance optimization.
+#### Messaging Layer
+ - **Amazon SQS** — Managed asynchronous messaging service enabling decoupled inter-service communication and event-driven workload processing.
+### VPC
+![Retail Store Microservices Application Stack](images/03_VPC.png)
+
