@@ -161,113 +161,36 @@ The Terraform project responsible for provisioning and configuring the platform 
 | `c8_02_amg_grafana_iam_role.tf` | Creates the IAM Role assumed by Amazon Managed Grafana. Attaches Prometheus, SNS, and X-Ray access policies. Enables Grafana workspace integration with AWS observability services. |
 | `c8_03_amg_grafana.tf` | Deploys an Amazon Managed Grafana workspace integrated with AWS SSO. Configures Prometheus, CloudWatch, and X-Ray as monitoring data sources. Provides centralized dashboards, alerting, and observability visualization for the EKS platform. |
 
+### AWS Managed Dataplane Terraform
+| File | Description |
+|------|-------------|
+| `c1_versions.tf` | Pins Terraform CLI and provider versions (AWS, Kubernetes, Helm, HTTP) to ensure deterministic IaC execution across environments. Configures remote state backend in Amazon S3 with encryption and state locking to guarantee consistent multi-user Terraform state management. |
+| `c2_variables.tf` | Defines all input parameters for the EKS platform including AWS regions, environment metadata, cluster configuration, endpoint exposure settings, node group sizing, and tagging strategy. Acts as the global configuration interface for the entire EKS infrastructure layer. |
+| `c3_01_vpc_remote_state.tf` | Consumes VPC state from a remote S3 backend using Terraform remote state data source, enabling cross-stack infrastructure integration. Exposes VPC ID and subnet topology to EKS for cluster networking and node placement. |
+| `c3_02_eks_remote_state` | Consumes the EKS Terraform state from S3 backend to extract cluster identity metadata (name, ID). This establishes a cross-stack dependency boundary, enabling Karpenter configuration to be tightly coupled to the existing EKS control plane without hardcoded values. |
+| `c4_datasources_and_locals.tf` | Pulls AWS account identity and region metadata plus defines deterministic local naming conventions. Centralizes cluster name resolution from remote state to ensure consistent resource targeting across Karpenter provisioning logic. |
+| `c5_01_podidentity_assumerole.tf` | Defines the IAM trust policy for EKS Pod Identity. Allows Kubernetes Pods (pods.eks.amazonaws.com) to assume IAM roles securely using STS. Acts as the base trust relationship reused by multiple microservices. |
+| `c5_02_secretstorecsi_iam_policy.tf` | Creates an IAM policy granting read access to AWS Secrets Manager secrets. Used by Secrets Store CSI Driver to fetch DB credentials dynamically at pod runtime. Restricts access only to secrets matching retailstore-db-secret*. |
+| `c6_01_catalog_rds_mysql_security_group.tf` | Creates a security group for the Catalog MySQL RDS instance. Allows inbound MySQL traffic only from the EKS cluster security group on port 3306. Implements private database access inside the VPC. |
+| `c6_02_catalog_rds_mysql_dbsubnet_group.tf` | Defines an RDS DB subnet group using private VPC subnets. Ensures the MySQL database is deployed only in private network zones. Supports secure internal-only database communication. |
+| `c6_03_catalog_rds_mysql_credentials.tf` | Retrieves database credentials securely from AWS Secrets Manager. Decodes the JSON secret into Terraform local variables for RDS provisioning. Avoids hardcoding usernames and passwords in Terraform code. |
+| `c6_04_catalog_rds_mysql_dbinstance.tf` | Deploys a private Amazon RDS MySQL instance for the Catalog microservice. Uses credentials from Secrets Manager and attaches secure subnet/security group configs. Provides persistent relational storage for catalog data. |
+| `c6_05_catalog_sa_iam_role.tf` | Creates an IAM role for the Catalog Kubernetes ServiceAccount. Attaches Secrets Manager access policy for runtime secret retrieval. Used by the CSI Driver through EKS Pod Identity. |
+| `c6_06_catalog_sa_eks_pod_identity_association.tf` | Associates the catalog ServiceAccount with its IAM role using EKS Pod Identity. Allows Catalog pods to securely access AWS Secrets Manager without static credentials. Enables fine-grained IAM permissions at pod level. |
+| `c7_01_cart_dynamoDB_iam_policy_and_role.tf` | Creates IAM policy and role for the Cart microservice to access DynamoDB. Grants full DynamoDB permissions required for cart item operations. Uses EKS Pod Identity for secure pod-level AWS authentication. |
+| `c7_02_cart_eks_pod_identity_association.tf` | Binds the carts Kubernetes ServiceAccount to the DynamoDB IAM role. Allows Cart pods to authenticate to AWS without access keys. Implements IAM-based workload identity inside EKS. |
+| `c7_03_cart_dynamodb_table.tf` | Creates the DynamoDB Items table for the Cart service in us-west-2. Uses on-demand billing and a GSI for customer-based queries. Designed specifically to match application code region constraints. |
+| `c8_01_checkout_redis_security_group.tf` | Creates a security group for ElastiCache Redis. Allows Redis access only from the EKS cluster on port 6379. Secures in-memory cache communication within the VPC. |
+| `c8_02_checkout_redis_subnet_group.tf` | Defines a subnet group for Redis using private subnets. Ensures ElastiCache nodes are deployed in isolated private networks. Supports secure low-latency cache access from EKS workloads. |
+| `c8_03_checkout_redis_cluster.tf` | Deploys an Amazon ElastiCache Redis cluster for the Checkout service. Uses Redis 7.1 with private networking and attached security groups. Provides fast in-memory caching/session storage for checkout operations. |
+| `c9_01_orders_postgresql_security_group.tf` | Creates a security group for the Orders PostgreSQL database. Allows inbound PostgreSQL traffic only from the EKS cluster on port 5432. Restricts database access to Kubernetes workloads only. |
+| `c9_02_orders_postgresql_db_subnet_group.tf` | Defines a private subnet group for PostgreSQL RDS deployment. Ensures the Orders database runs entirely in private subnets. Improves network isolation and security posture. |
+| `c9_03_orders_postgresql_dbinstance.tf` | Deploys a PostgreSQL RDS instance for the Orders microservice. Uses encrypted storage, private networking, and Secrets Manager credentials. Provides durable transactional storage for order processing. |
+| `c9_04_orders_postgresql_sa_iam_role.tf` | Creates an IAM role for Orders pods to retrieve database secrets. Attaches Secrets Manager permissions through Pod Identity integration. Enables secure secret access without embedded credentials. |
+| `c9_05_orders_postgresql_sa_eks_pod_identity_association.tf` | Associates the orders ServiceAccount with the IAM role for Secrets Manager access. Allows Orders pods to authenticate to AWS securely using Pod Identity. Supports runtime secret injection through CSI Driver. |
+| `c9_06_orders_aws_sqs_queue.tf` | Creates an Amazon SQS queue for asynchronous order processing. Provides decoupled messaging between microservices and backend workflows. Improves resiliency and buffering for order events. |
+| `c9_07_orders_aws_sqs_iam_policy.tf` | Creates and attaches IAM permissions for Orders pods to access SQS. Allows sending, receiving, deleting, and querying queue messages. Extends the existing Orders Pod Identity role with messaging capabilities. |
 
-```bash
-│   ├── 02_EKS_terraform-manifests_with_addons
-│   │   ├── c1-versions.tf
-│   │   ├── c10_eks_outputs.tf
-│   │   ├── c11-podidentityagent-eksaddon.tf
-│   │   ├── c12-helm-and-kubernetes-providers.tf
-│   │   ├── c13-podidentity-assumerole.tf
-│   │   ├── c14-01-lbc-iam-policy-datasources.tf
-│   │   ├── c14-02-lbc-iam-policy-and-role.tf
-│   │   ├── c14-03-lbc-eks-pod-identity-association.tf
-│   │   ├── c14-04-lbc-helm-install.tf
-│   │   ├── c15-01-ebscsi-iam-policy-and-role.tf
-│   │   ├── c15-02-ebscsi-eks-pod-identity-association.tf
-│   │   ├── c15-03-ebscsi-eksaddon.tf
-│   │   ├── c16-01-secretstorecsi-helm-install.tf
-│   │   ├── c16-02-secretstorecsi-ascp-helm-install.tf
-│   │   ├── c17-01-externaldns-iam-policy-and-role.tf
-│   │   ├── c17-02-externaldns-pod-identity-association.tf
-│   │   ├── c17-03-externaldns-eksaddon.tf
-│   │   ├── c18_eksaddon_metrics_server.tf
-│   │   ├── c2-variables.tf
-│   │   ├── c3_remote-state.tf
-│   │   ├── c4_datasources_and_locals.tf
-│   │   ├── c5_eks_tags.tf
-│   │   ├── c6_eks_cluster_iamrole.tf
-│   │   ├── c7_eks_cluster.tf
-│   │   ├── c8_eks_nodegroup_iamrole.tf
-│   │   ├── c9_eks_nodegroup_private.tf
-│   │   ├── env
-│   │   │   ├── dev.tfvars
-│   │   │   ├── prod.tfvars
-│   │   │   └── staging.tfvars
-│   │   └── terraform.tfvars
-│   ├── 03_KARPENTER_terraform-manifests
-│   │   ├── c1_versions.tf
-│   │   ├── c2_variables.tf
-│   │   ├── c3_01_vpc_remote_state.tf
-│   │   ├── c3_02_eks_remote_state.tf
-│   │   ├── c4_datasources_and_locals.tf
-│   │   ├── c5_helm_and_kubernetes_providers.tf
-│   │   ├── c6_01_karpenter_controller_iam_role.tf
-│   │   ├── c6_02_karpenter_controller_iam_policy.tf
-│   │   ├── c6_03_karpenter_pod_identity_association.tf
-│   │   ├── c6_04_karpenter_node_iam_role.tf
-│   │   ├── c6_05_karpenter_access_entry.tf
-│   │   ├── c6_06_karpenter_helm_install.tf
-│   │   ├── c6_07_karpenter_sqs_queue.tf
-│   │   ├── c6_08_karpenter_eventbridge_rules.tf
-│   │   ├── c6_09_karpenter_service_linked_roles.tf
-│   │   └── terraform.tfvars
-│   ├── 04_KARPENTER_k8s-manifests
-│   │   ├── 01_ec2nodeclass.yaml
-│   │   ├── 02_nodepool_ondemand.yaml
-│   │   └── 03_nodepool_spot.yaml
-│   ├── 05_OPENTELEMTRY_terraform-manifests
-│   │   ├── c1_versions.tf
-│   │   ├── c2_variables.tf
-│   │   ├── c3_01_vpc_remote_state.tf
-│   │   ├── c3_02_eks_remote_state.tf
-│   │   ├── c4_datasources_and_locals.tf
-│   │   ├── c5_helm_and_kubernetes_providers.tf
-│   │   ├── c6_01_adot_collector_iam_role.tf
-│   │   ├── c6_02_adot_collector_iam_policy.tf
-│   │   ├── c6_03_adot_pod_identity_association.tf
-│   │   ├── c6_04_eks_addon_certmanager.tf
-│   │   ├── c6_05_eks_addon_adot.tf
-│   │   ├── c6_06_eks_addon_prometheus_node_exporter.tf
-│   │   ├── c6_07_eks_addon_kube_state_metrics.tf
-│   │   ├── c6_09_adot_k8s_cluster_role_and_rolebinding.tf
-│   │   ├── c7_amp_prometheus_workspace.tf
-│   │   ├── c8_01_amg_grafana_iam_policy.tf
-│   │   ├── c8_02_amg_grafana_iam_role.tf
-│   │   ├── c8_03_amg_grafana.tf
-│   │   └── terraform.tfvars
-└── 02_RetailStore_App_Environment
-    ├── 01_RetailStore_AWS_Dataplane
-    │   ├── 01_AWS_Data_Plane_terraform-manifests
-    │   │   ├── c1_versions.tf
-    │   │   ├── c2_variables.tf
-    │   │   ├── c3_01_vpc_remote_state.tf
-    │   │   ├── c3_02_eks_remote_state.tf
-    │   │   ├── c4_datasources_and_locals.tf
-    │   │   ├── c5_01_podidentity_assumerole.tf
-    │   │   ├── c5_02_secretstorecsi_iam_policy.tf
-    │   │   ├── c6_01_catalog_rds_mysql_security_group.tf
-    │   │   ├── c6_02_catalog_rds_mysql_dbsubnet_group.tf
-    │   │   ├── c6_03_catalog_rds_mysql_credentials.tf
-    │   │   ├── c6_04_catalog_rds_mysql_dbinstance.tf
-    │   │   ├── c6_05_catalog_sa_iam_role.tf
-    │   │   ├── c6_06_catalog_sa_eks_pod_identity_association.tf
-    │   │   ├── c7_01_cart_dynamoDB_iam_policy_and_role.tf
-    │   │   ├── c7_02_cart_eks_pod_identity_association.tf
-    │   │   ├── c7_03_cart_dynamodb_table.tf
-    │   │   ├── c8_01_checkout_redis_security_group.tf
-    │   │   ├── c8_02_checkout_redis_subnet_group.tf
-    │   │   ├── c8_03_checkout_redis_cluster.tf
-    │   │   ├── c9_01_orders_postgresql_security_group.tf
-    │   │   ├── c9_02_orders_postgresql_db_subnet_group.tf
-    │   │   ├── c9_03_orders_postgresql_dbinstance.tf
-    │   │   ├── c9_04_orders_postgresql_sa_iam_role.tf
-    │   │   ├── c9_05_orders_postgresql_sa_eks_pod_identity_association.tf
-    │   │   ├── c9_06_orders_aws_sqs_queue.tf
-    │   │   └── c9_07_orders_aws_sqs_iam_policy.tf
-    │   ├── create-aws-dataplane.sh
-    │   └── delete-aws-dataplane.sh
-```
 
 ### Retail Store Microservices Application Stack
 ![Retail Store Microservices Application Stack](images/02_retail_application.png)
