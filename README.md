@@ -139,6 +139,27 @@ The Terraform project responsible for provisioning and configuring the platform 
 | `02_nodepool_ondemand.yaml` | Defines an On-Demand Karpenter NodePool for stable workloads using controlled EC2 instance families, sizes, and AZs. |
 | `03_nodepool_spot.yaml` | Defines a Spot-based Karpenter NodePool optimized for cost-efficient autoscaling using EC2 Spot instances, with multiple families and sizes across several AZs, automatic node consolidation and controlled disruption handling for interrupted or underutilized Spot nodes. |
 
+### OpenTelemetry Terraform
+| File | Description |
+|------|-------------|
+| `c1_versions.tf` | Pins Terraform CLI and provider versions (AWS, Kubernetes, Helm, HTTP) to ensure deterministic IaC execution across environments. Configures remote state backend in Amazon S3 with encryption and state locking to guarantee consistent multi-user Terraform state management. |
+| `c2_variables.tf` | Defines all input parameters for the EKS platform including AWS regions, environment metadata, cluster configuration, endpoint exposure settings, node group sizing, and tagging strategy. Acts as the global configuration interface for the entire EKS infrastructure layer. |
+| `c3_01_vpc_remote_state.tf` | Consumes VPC state from a remote S3 backend using Terraform remote state data source, enabling cross-stack infrastructure integration. Exposes VPC ID and subnet topology to EKS for cluster networking and node placement. |
+| `c3_02_eks_remote_state` | Consumes the EKS Terraform state from S3 backend to extract cluster identity metadata (name, ID). This establishes a cross-stack dependency boundary, enabling Karpenter configuration to be tightly coupled to the existing EKS control plane without hardcoded values. |
+| `c4_datasources_and_locals.tf` | Pulls AWS account identity and region metadata plus defines deterministic local naming conventions. Centralizes cluster name resolution from remote state to ensure consistent resource targeting across Karpenter provisioning logic. |
+| `c5_helm_and_kubernetes_providers.tf` | Configures Kubernetes and Helm providers using live EKS authentication (IAM token + cluster CA + endpoint). Enables Terraform to directly manage in-cluster resources (Karpenter, CRDs, controllers) via the EKS API server securely. |
+| `c6_01_adot_collector_iam_role.tf` | Creates an IAM Role for the ADOT Collector using EKS Pod Identity. Allows Kubernetes pods to securely assume AWS permissions without static credentials. Used by OpenTelemetry collectors running inside the EKS cluster. |
+| `c6_02_adot_collector_iam_policy.tf` | Defines IAM permissions for ADOT to send metrics, logs, and traces to AWS observability services. Grants access to CloudWatch, X-Ray, and Amazon Managed Prometheus (AMP). Attached to the ADOT Collector IAM Role. |
+| `c6_03_adot_pod_identity_association.tf` | Associates the ADOT Kubernetes ServiceAccount with the IAM Role using EKS Pod Identity. Enables secure AWS API access directly from pods. Eliminates the need for IAM credentials inside containers. |
+| `c6_04_eks_addon_certmanager.tf` | Deploys the cert-manager EKS addon with the latest compatible version. Used as a prerequisite dependency for ADOT admission webhooks and certificates. Configured with automatic conflict resolution during updates. |
+| `c6_05_eks_addon_adot.tf` | Installs the AWS Distro for OpenTelemetry (ADOT) EKS addon. Configures resource limits and replica settings for telemetry collection workloads. Provides centralized observability pipeline support for metrics, logs, and traces. |
+| `c6_06_eks_addon_prometheus_node_exporter.tf` | Deploys Prometheus Node Exporter as an EKS managed addon. Collects infrastructure-level node metrics such as CPU, memory, disk, and network usage. Metrics are scraped by Prometheus-compatible monitoring systems. |
+| `c6_07_eks_addon_kube_state_metrics.tf` | Deploys kube-state-metrics as an EKS addon. Exposes Kubernetes object state metrics including deployments, pods, replicas, and namespaces. Used for cluster-level monitoring and Grafana dashboards. |
+| `c6_09_adot_k8s_cluster_role_and_rolebinding.tf` | Creates Kubernetes RBAC permissions for the OpenTelemetry Collector. Allows scraping metrics and metadata from Kubernetes APIs and cluster resources. Binds the permissions to the ADOT Collector ServiceAccount. |
+| `c7_amp_prometheus_workspace.tf` | Creates an Amazon Managed Prometheus (AMP) workspace. Provides a scalable managed backend for Prometheus metric storage and querying.Exports remote write and query endpoints for telemetry integrations. |
+| `c8_01_amg_grafana_iam_policy.tf` | Defines IAM policies for Amazon Managed Grafana (AMG). Grants access to Prometheus metrics, SNS notifications, and AWS X-Ray traces. Used by Grafana to securely query observability data sources. |
+| `c8_02_amg_grafana_iam_role.tf` | Creates the IAM Role assumed by Amazon Managed Grafana. Attaches Prometheus, SNS, and X-Ray access policies. Enables Grafana workspace integration with AWS observability services. |
+| `c8_03_amg_grafana.tf` | Deploys an Amazon Managed Grafana workspace integrated with AWS SSO. Configures Prometheus, CloudWatch, and X-Ray as monitoring data sources. Provides centralized dashboards, alerting, and observability visualization for the EKS platform. |
 
 
 ```bash
