@@ -90,22 +90,37 @@ The Terraform project responsible for provisioning and configuring the platform 
 
 **Applications** — Kubernetes workloads, Helm releases, ingress resources, GitOps-managed deployments, and production retail microservices deployed into the EKS platform.
 
+| File | Description |
+|------|-------------|
+| `c1_versions.tf` | Required Terraform + AWS provider versions |
+| `c2_variables.tf` | Input variables (region, cluster name, etc.) |
+| `c3_remote-state.tf` | Remote backend for Terraform state (S3 + DynamoDB) |
+| `c4_datasources_and_locals.tf` | AWS data sources and local values |
+| `c5_eks_tags.tf` | Common tags for resources |
+| `c6_eks_cluster_iamrole.tf` | Creates the IAM role assumed by the Amazon EKS control plane through an STS trust policy with eks.amazonaws.com. Attaches AmazonEKSClusterPolicy for cluster management operations and AmazonEKSVPCResourceController for ENI and advanced VPC networking management required by production EKS workloads. |
+| `c7_eks_cluster.tf` | Provisions the Amazon EKS control plane with private subnet integration, configurable public/private API endpoint access, Kubernetes service CIDR allocation, and control plane logging enabled for API, audit, authentication, scheduler, and controller visibility. Configures hybrid authentication using both aws-auth ConfigMap and EKS Access Entries API while automatically granting cluster-admin |
+| `c8_eks_nodegroup_iamrole.tf` | Creates the IAM role assumed by EC2 worker nodes in the EKS managed node group. Attaches AmazonEKSWorkerNodePolicy for Kubernetes node operations, AmazonEKS_CNI_Policy for ENI/network management through the VPC CNI plugin, and AmazonEC2ContainerRegistryReadOnly for pulling container images from Amazon ECR. |
+| `c9_eks_nodegroup_private.tf` | Provisions an Amazon EKS managed node group across private subnets using Amazon Linux 2023 EC2 worker nodes. Configures Kubernetes node autoscaling, rolling update behavior, node labels, On-Demand/Spot capacity selection, and EKS-integrated IAM permissions for cluster operations, VPC CNI networking, and Amazon ECR image pulls. |
+| `c10_eks_outputs.tf` | Exports critical Amazon EKS infrastructure metadata including cluster endpoint, cluster ID, Kubernetes version, certificate authority data, node group name, IAM role ARN, and cluster security group ID. Provides integration outputs required for kubectl access configuration, downstream infrastructure dependencies, automation workflows, and Kubernetes platform operations. |
+| `c11-podidentityagent-eksaddon.tf` | Deploys the Amazon EKS Pod Identity Agent managed add-on using the latest version compatible with the cluster Kubernetes version. Enables secure IAM role association directly to Kubernetes pods without relying on node-level IAM permissions, supporting fine-grained workload identity and least-privilege access control. |
+| `c12-helm-and-kubernetes-providers.tf` | Configures Terraform Helm and Kubernetes providers using dynamic authentication against the Amazon EKS API server. Enables Terraform to provision Kubernetes-native resources, Helm charts, namespaces, controllers, add-ons, and platform services directly inside the EKS cluster. |
+| `c13-podidentity-assumerole.tf` | Defines the IAM trust policy used by Amazon EKS Pod Identity, allowing Kubernetes pods authenticated through pods.eks.amazonaws.com to assume AWS IAM roles via STS. Enables secure pod-level IAM access without exposing permissions through EC2 worker node instance roles. |
+| `c14-01-lbc-iam-policy-datasources.tf` | Defines the IAM trust policy used by Amazon EKS Pod Identity, allowing Kubernetes pods authenticated through pods.eks.amazonaws.com to assume AWS IAM roles via STS. Enables secure pod-level IAM access without exposing permissions through EC2 worker node instance roles. |
+| `c14-02-lbc-iam-policy-and-role.tf` | Creates the IAM policy for the AWS Load Balancer Controller using the upstream JSON policy document and provisions a dedicated IAM role with a pod identity trust relationship. Attaches the controller policy to the role, enabling Kubernetes-managed provisioning of ALB/NLB resources through AWS APIs via least-privilege IAM access. |
+| `c14-03-lbc-eks-pod-identity-association.tf` | Configures an EKS Pod Identity Association linking the aws-load-balancer-controller Kubernetes service account in the kube-system namespace to a dedicated IAM role. Enables the AWS Load Balancer Controller to securely assume IAM permissions at pod level for provisioning and managing ALB/NLB resources without using node IAM credentials. |
+| `c14-04-lbc-helm-install.tf` | Deploys the AWS Load Balancer Controller into the EKS cluster using the Helm provider, bound to the kube-system namespace with explicit dependency on IAM role, node group, and pod identity association. Configures cluster name, VPC ID, and region to enable Kubernetes Ingress resources to dynamically provision and manage AWS ALB/NLB load balancers via the AWS API. |
+| `c15-01-ebscsi-iam-policy-and-role.tf` | Creates an IAM role for the Amazon EBS CSI Driver using a Kubernetes pod identity trust policy. Attaches the AWS managed AmazonEBSCSIDriverPolicy to enable dynamic provisioning, attachment, and lifecycle management of EBS volumes for Kubernetes PersistentVolumes in EKS. |
+| `c15-02-ebscsi-eks-pod-identity-association.tf` | Maps the Amazon EBS CSI driver Kubernetes service account to an IAM role using EKS Pod Identity, enabling secure pod-level access to AWS EBS APIs for volume provisioning without node-based credentials. |
+| `c15-03-ebscsi-eksaddon.tf` | Deploys the Amazon EBS CSI Driver as an EKS managed add-on with version discovery based on cluster Kubernetes version, enabling dynamic persistent volume provisioning via AWS EBS. Uses IAM role association for secure storage lifecycle operations. |
+| `c16-01-secretstorecsi-helm-install.tf` | Installs the Secrets Store CSI Driver via Helm into the EKS cluster, enabling Kubernetes workloads to mount external secrets as volumes. Configures Pod Identity token audience to support AWS IAM authentication flow for secret retrieval. |
+| `c16-02-secretstorecsi-ascp-helm-install.tf` | Deploys AWS Secrets Store CSI Provider for AWS integration, enabling retrieval of secrets from AWS Secrets Manager and Parameter Store. Extends CSI driver functionality with AWS-native secret backend integration. |
+| `c17-01-externaldns-iam-policy-and-role.tf` | Creates IAM role for ExternalDNS with Route 53 full access, enabling Kubernetes to manage DNS records dynamically based on Ingress and Service resources via AWS API permissions. |
+| `c17-02-externaldns-pod-identity-association.tf` | Associates ExternalDNS Kubernetes service account with IAM role using EKS Pod Identity, enabling secure DNS record management in Route 53 without node-level IAM dependency. |
+| `c17-03-externaldns-eksaddon.tf` | Deploys ExternalDNS as an EKS managed add-on with dynamic version selection, enabling automated DNS record creation and lifecycle management from Kubernetes service and ingress resources. |
+| `c18_eksaddon_metrics_server.tf` | Installs Metrics Server as an EKS add-on for Kubernetes resource metrics collection, enabling Horizontal Pod Autoscaler (HPA) functionality and cluster-level CPU/memory utilization monitoring. |
 
 
 ```bash
-├── 01_EKS_Cluster_Environment
-│   ├── 01_VPC_terraform-manifests
-│   │   ├── c1-versions.tf
-│   │   ├── c2-variables.tf
-│   │   ├── c3-vpc.tf
-│   │   ├── c4-outputs.tf
-│   │   ├── modules
-│   │   │   └── vpc
-│   │   │       ├── datasources-and-locals.tf
-│   │   │       ├── main.tf
-│   │   │       ├── outputs.tf
-│   │   │       └── variables.tf
-│   │   └── terraform.tfvars
 │   ├── 02_EKS_terraform-manifests_with_addons
 │   │   ├── c1-versions.tf
 │   │   ├── c10_eks_outputs.tf
@@ -230,3 +245,4 @@ Microservices-based retail web platform deployed on Amazon EKS, composed of inde
  - **Amazon ElastiCache Redis** — In-memory distributed caching layer used for low-latency data access, session acceleration, and performance optimization.
 #### Messaging Layer
  - **Amazon SQS** — Managed asynchronous messaging service enabling decoupled inter-service communication and event-driven workload processing.
+
