@@ -191,6 +191,14 @@ The Terraform project responsible for provisioning and configuring the platform 
 | `c9_06_orders_aws_sqs_queue.tf` | Creates an Amazon SQS queue for asynchronous order processing. Provides decoupled messaging between microservices and backend workflows. Improves resiliency and buffering for order events. |
 | `c9_07_orders_aws_sqs_iam_policy.tf` | Creates and attaches IAM permissions for Orders pods to access SQS. Allows sending, receiving, deleting, and querying queue messages. Extends the existing Orders Pod Identity role with messaging capabilities. |
 
+### Observability - OpenTelemetry
+| File | Description |
+|------|-------------|
+| `01_adot_collector_traces.yaml` | Deploys an ADOT OpenTelemetry Collector for distributed tracing in EKS. Receives OTLP traces from all microservices, enriches them with Kubernetes metadata, and exports them to AWS X-Ray. Filters health-check traffic and batches traces for efficient processing. |
+| `02_adot_instrumentation_traces.yaml` | Defines OpenTelemetry auto-instrumentation settings for Kubernetes workloads. Configures OTLP exporters, trace propagation, and AWS resource detection globally. Enables automatic trace generation and cross-service distributed tracing. |
+| `01_adot_collector_logs.yaml` | Deploys an ADOT Collector as a DaemonSet for node-level log collection. Reads Kubernetes container logs from /var/log/pods and exports them to CloudWatch Logs. Enriches logs with Kubernetes metadata for centralized observability. |
+| `01_adot_collector_prometheus_full_k8s_cluster.yaml` | Deploys an ADOT metrics collector integrated with Prometheus and Amazon Managed Prometheus (AMP). Scrapes Kubernetes cluster, node, pod, and service metrics using Prometheus discovery configurations. Processes and exports metrics securely to AMP using SigV4 authentication for Grafana visualization. |
+
 
 ### Retail Store Microservices Application Stack
 ![Retail Store Microservices Application Stack](images/02_retail_application.png)
