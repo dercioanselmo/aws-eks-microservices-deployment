@@ -79,17 +79,10 @@ The terraform project source code that defines VPC have the following structure:
 ### EKS Cluster
 ![EKS Cluster](images/04_EKS.png)
 
-The diagram above illustrates the high-level architecture and operational components of the Amazon EKS platform provisioned through Terraform. The environment consists of an AWS-managed Kubernetes control plane distributed across multiple Availability Zones, initially backed by three EC2 On-Demand worker nodes forming the primary compute layer for containerized workloads.
-The Terraform project responsible for provisioning and configuring the platform is organized into the following major infrastructure domains:
+The environment consists of an AWS-managed Kubernetes control plane distributed across multiple Availability Zones, initially backed by three EC2 On-Demand worker nodes.
+The Terraform project responsible for provisioning and configuring the platform is organized as bellow:
 
-**Core EKS Cluster** — Provisioning of the Amazon EKS control plane, cluster networking integration, IAM roles, security groups, node groups, and Kubernetes access configuration.
-
-**Add-ons** — Deployment and configuration of critical Kubernetes operational services including AWS Load Balancer Controller, ExternalDNS, Karpenter, observability stack, ingress controllers, autoscaling components, and platform integrations.
-
-**Dataplane** — Provisioning of managed AWS backend services supporting the microservices platform, including Amazon RDS MySQL, Amazon RDS PostgreSQL, DynamoDB, ElastiCache Redis, and Amazon SQS for persistence, caching, and asynchronous messaging workloads.
-
-**Applications** — Kubernetes workloads, Helm releases, ingress resources, GitOps-managed deployments, and production retail microservices deployed into the EKS platform.
-
+### Core EKS Cluster + AddOns
 | File | Description |
 |------|-------------|
 | `c1_versions.tf` | Pins Terraform CLI and provider versions (AWS, Kubernetes, Helm, HTTP) to ensure deterministic IaC execution across environments. Configures remote state backend in Amazon S3 with encryption and state locking to guarantee consistent multi-user Terraform state management. |
@@ -118,6 +111,34 @@ The Terraform project responsible for provisioning and configuring the platform 
 | `c17-02-externaldns-pod-identity-association.tf` | Associates ExternalDNS Kubernetes service account with IAM role using EKS Pod Identity, enabling secure DNS record management in Route 53 without node-level IAM dependency. |
 | `c17-03-externaldns-eksaddon.tf` | Deploys ExternalDNS as an EKS managed add-on with dynamic version selection, enabling automated DNS record creation and lifecycle management from Kubernetes service and ingress resources. |
 | `c18_eksaddon_metrics_server.tf` | Installs Metrics Server as an EKS add-on for Kubernetes resource metrics collection, enabling Horizontal Pod Autoscaler (HPA) functionality and cluster-level CPU/memory utilization monitoring. |
+
+### Karpenter Terraform
+| File | Description |
+|------|-------------|
+| `c1_versions.tf` | Pins Terraform CLI and provider versions (AWS, Kubernetes, Helm, HTTP) to ensure deterministic IaC execution across environments. Configures remote state backend in Amazon S3 with encryption and state locking to guarantee consistent multi-user Terraform state management. |
+| `c2_variables.tf` | Defines all input parameters for the EKS platform including AWS regions, environment metadata, cluster configuration, endpoint exposure settings, node group sizing, and tagging strategy. Acts as the global configuration interface for the entire EKS infrastructure layer. |
+| `c3_01_vpc_remote_state.tf` | Consumes VPC state from a remote S3 backend using Terraform remote state data source, enabling cross-stack infrastructure integration. Exposes VPC ID and subnet topology to EKS for cluster networking and node placement. |
+| `c3_02_eks_remote_state` | Consumes the EKS Terraform state from S3 backend to extract cluster identity metadata (name, ID). This establishes a cross-stack dependency boundary, enabling Karpenter configuration to be tightly coupled to the existing EKS control plane without hardcoded values. |
+| `c4_datasources_and_locals.tf` | Pulls AWS account identity and region metadata plus defines deterministic local naming conventions. Centralizes cluster name resolution from remote state to ensure consistent resource targeting across Karpenter provisioning logic. |
+| `c5_helm_and_kubernetes_providers.tf` | Configures Kubernetes and Helm providers using live EKS authentication (IAM token + cluster CA + endpoint). Enables Terraform to directly manage in-cluster resources (Karpenter, CRDs, controllers) via the EKS API server securely. |
+| `c6_01_karpenter_controller_iam_role.tf` | Defines IAM role for the Karpenter controller using IRSA-style Pod Identity trust relationship (pods.eks.amazonaws.com). Grants the controller permission to assume AWS actions required for dynamic EC2 provisioning and node lifecycle management. |
+| `c6_02_karpenter_controller_iam_policy.tf` | Implements EC2 provisioning IAM policy with strict tag-based and resource-scoped controls. Governs lifecycle actions (RunInstances, CreateFleet, tagging, termination) enforcing cluster ownership via karpenter.sh/nodepool and eks-cluster-name constraints. |
+| `c6_03_karpenter_pod_identity_association.tf` | Binds Karpenter Kubernetes service account to IAM role via EKS Pod Identity. Eliminates static credentials by enabling runtime identity injection for controller AWS API access. |
+| `c6_04_karpenter_node_iam_role.tf` | Defines IAM role assumed by EC2 worker nodes provisioned by Karpenter. Attaches EKS worker, CNI, ECR pull, and SSM policies for full cluster runtime + observability + image access. |
+| `c6_05_karpenter_access_entry.tf` | Registers node IAM role into EKS Access Entry system. Establishes authentication mapping for EC2 nodes using EC2_LINUX identity type for API-server authorization. |
+| `c6_06_karpenter_helm_install.tf` | Deploys Karpenter controller via Helm from public ECR registry with explicit cluster configuration (endpoint, queue, service account). Boots autoscaling control loop integrated with interruption handling system. |
+| `c6_07_karpenter_sqs_queue.tf` | Creates SQS queue as event buffer for node interruption signals. Enables decoupled processing of Spot interruptions, scaling events, and lifecycle notifications for graceful node draining. |
+| `c6_08_karpenter_eventbridge_rules.tf` | Defines EventBridge-to-SQS routing for EC2 lifecycle signals (Spot interruptions, rebalance recommendations, AWS Health, instance state changes). Enables proactive node replacement orchestration. |
+| `c6_09_karpenter_service_linked_roles.tf` | Provisions AWS service-linked roles for EC2 Spot and Spot Fleet. Required for Karpenter to execute fleet-based provisioning and Spot instance lifecycle operations. |
+| `terraform.tfvars` | Defines environment-scoped configuration for Karpenter layer (region, tags, business domain). Ensures consistent tagging and separation of environments for multi-account / multi-cluster scaling strategies. |
+
+### Karpenter Kubernetes manifests
+| File | Description |
+|------|-------------|
+| `01_ec2nodeclass.yaml` | Defines the AWS infrastructure template Karpenter uses to launch EC2 worker nodes, including AMI, IAM role, storage, subnets, and security groups. |
+| `02_nodepool_ondemand.yaml` | Defines an On-Demand Karpenter NodePool for stable workloads using controlled EC2 instance families, sizes, and AZs. |
+| `03_nodepool_spot.yaml` | Defines a Spot-based Karpenter NodePool optimized for cost-efficient autoscaling using EC2 Spot instances, with multiple families and sizes across several AZs, automatic node consolidation and controlled disruption handling for interrupted or underutilized Spot nodes. |
+
 
 
 ```bash
@@ -245,4 +266,3 @@ Microservices-based retail web platform deployed on Amazon EKS, composed of inde
  - **Amazon ElastiCache Redis** — In-memory distributed caching layer used for low-latency data access, session acceleration, and performance optimization.
 #### Messaging Layer
  - **Amazon SQS** — Managed asynchronous messaging service enabling decoupled inter-service communication and event-driven workload processing.
-
