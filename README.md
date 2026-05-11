@@ -92,11 +92,11 @@ The Terraform project responsible for provisioning and configuring the platform 
 
 | File | Description |
 |------|-------------|
-| `c1_versions.tf` | Required Terraform + AWS provider versions |
-| `c2_variables.tf` | Input variables (region, cluster name, etc.) |
-| `c3_remote-state.tf` | Remote backend for Terraform state (S3 + DynamoDB) |
-| `c4_datasources_and_locals.tf` | AWS data sources and local values |
-| `c5_eks_tags.tf` | Common tags for resources |
+| `c1_versions.tf` | Pins Terraform CLI and provider versions (AWS, Kubernetes, Helm, HTTP) to ensure deterministic IaC execution across environments. Configures remote state backend in Amazon S3 with encryption and state locking to guarantee consistent multi-user Terraform state management. |
+| `c2_variables.tf` | Defines all input parameters for the EKS platform including AWS regions, environment metadata, cluster configuration, endpoint exposure settings, node group sizing, and tagging strategy. Acts as the global configuration interface for the entire EKS infrastructure layer. |
+| `c3_remote-state.tf` | Consumes VPC state from a remote S3 backend using Terraform remote state data source, enabling cross-stack infrastructure integration. Exposes VPC ID and subnet topology to EKS for cluster networking and node placement. |
+| `c4_datasources_and_locals.tf` | Computes deterministic naming conventions using Terraform locals to standardize resource identity across the platform. Builds structured naming hierarchy combining business division, environment, and cluster identifiers for consistent tagging and resource naming. |
+| `c5_eks_tags.tf` | Applies required AWS EKS subnet tagging model for Kubernetes load balancer integration and node provisioning. Marks subnets as owned to enable worker node and Karpenter provisioning, while configuring ELB and internal ELB routing for service exposure across public and private subnets. |
 | `c6_eks_cluster_iamrole.tf` | Creates the IAM role assumed by the Amazon EKS control plane through an STS trust policy with eks.amazonaws.com. Attaches AmazonEKSClusterPolicy for cluster management operations and AmazonEKSVPCResourceController for ENI and advanced VPC networking management required by production EKS workloads. |
 | `c7_eks_cluster.tf` | Provisions the Amazon EKS control plane with private subnet integration, configurable public/private API endpoint access, Kubernetes service CIDR allocation, and control plane logging enabled for API, audit, authentication, scheduler, and controller visibility. Configures hybrid authentication using both aws-auth ConfigMap and EKS Access Entries API while automatically granting cluster-admin |
 | `c8_eks_nodegroup_iamrole.tf` | Creates the IAM role assumed by EC2 worker nodes in the EKS managed node group. Attaches AmazonEKSWorkerNodePolicy for Kubernetes node operations, AmazonEKS_CNI_Policy for ENI/network management through the VPC CNI plugin, and AmazonEC2ContainerRegistryReadOnly for pulling container images from Amazon ECR. |
