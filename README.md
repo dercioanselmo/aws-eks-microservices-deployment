@@ -62,6 +62,23 @@ The network topology comprises:
  - 3 NAT Gateway
  - Dedicated public and private route tables 
 
+The VPC Public and Private subnets calculation:
+```bash
+apple@apples-MacBook-Pro aws-eks-microservices-deployment % terraform console
+> cidrsubnet("10.0.0.0/16", 8, 0)
+"10.0.0.0/24"
+> cidrsubnet("10.0.0.0/16", 8, 1)
+"10.0.1.0/24"
+> cidrsubnet("10.0.0.0/16", 8, 2)
+"10.0.2.0/24"
+> cidrsubnet("10.0.0.0/16", 8, 0+10)
+"10.0.10.0/24"
+> cidrsubnet("10.0.0.0/16", 8, 1+10)
+"10.0.11.0/24"
+> cidrsubnet("10.0.0.0/16", 8, 2+10)
+"10.0.12.0/24"
+```
+
 The terraform project source code that defines VPC have the following structure:
 | File | Description |
 |------|-------------|
