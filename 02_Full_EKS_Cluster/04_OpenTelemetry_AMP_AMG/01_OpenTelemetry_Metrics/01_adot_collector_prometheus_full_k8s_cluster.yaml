@@ -18,9 +18,9 @@ spec:
 
   env:
     - name: CLUSTER_NAME
-      value: "retail-dev-eksdemo"  # UPDATE: Your EKS cluster name
+      value: "retail-dev"  
     - name: AWS_REGION
-      value: "us-east-1"            # UPDATE: Your AWS region
+      value: "us-east-1"            
     - name: NODE_NAME  
       valueFrom:
         fieldRef:

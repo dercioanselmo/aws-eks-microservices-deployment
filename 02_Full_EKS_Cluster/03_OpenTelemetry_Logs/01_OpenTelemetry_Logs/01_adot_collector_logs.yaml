@@ -75,8 +75,8 @@ spec:
     exporters:
       awscloudwatchlogs:
         region: us-east-1
-        log_group_name: "/aws/eks/retail-dev-eksdemo/application"
-        log_stream_name: "retail-dev-eksdemo-v4"    # Single Stream
+        log_group_name: "/aws/eks/retail-dev-eks/application"
+        log_stream_name: "retail-dev-eks-v4"    # Single Stream
         # log_stream_name: "${K8S_NODE_NAME}"         # Per k8s Node 
     
     service:

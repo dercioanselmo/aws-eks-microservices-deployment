@@ -1,38 +1,66 @@
 # Retail Store Microservices Production Deployment
 
 Production-grade cloud-native retail platform deployed on AWS using Terraform-based Infrastructure as Code (IaC) with remote state management in Amazon S3. The platform is designed for high availability, scalability, security, and fully automated continuous delivery.
-#### Core Infrastructure
- - Amazon VPC across 3 Availability Zones
- - Public and Private subnet segmentation
- - Internet Gateway + Multi-AZ NAT Gateways
- - Amazon EKS cluster with multi-AZ worker nodes
- - AWS IAM Roles and Policies
- - AWS Secrets Manager
-#### Kubernetes Platform Components
- - AWS Load Balancer Controller
- - Karpenter dynamic node provisioning
- - Horizontal Pod Autoscaler (HPA)
- - ExternalDNS with Amazon Route 53
- - Helm-based application deployments
- 
-#### Dataplane Services
- - Amazon RDS MySQL
- - Amazon RDS PostgreSQL
- - Amazon DynamoDB
- - Amazon ElastiCache Redis
- - Amazon SQS
- #### DevOps & GitOps
- - Terraform infrastructure provisioning
- - GitHub Actions CI/CD pipelines
- - ArgoCD GitOps deployments
- - Argo Rollouts for progressive delivery
- - Amazon ECR container registry
-#### Observability Stack
- - AWS Distro for OpenTelemetry
- - Amazon CloudWatch
- - Amazon Managed Prometheus
- - Amazon Managed Grafana
----
+
+<table>
+  <tr>
+    <td>
+      <b>Core Infrastructure</b>
+      <ul>
+        <li>Amazon VPC across 3 Availability Zones</li>
+        <li>Public and Private subnet segmentation</li>
+        <li>Internet Gateway + Multi-AZ NAT Gateways</li>
+        <li>Amazon EKS cluster with multi-AZ worker nodes</li>
+        <li>AWS IAM Roles and Policies</li>
+        <li>AWS Secrets Manager</li>
+      </ul>
+    </td>
+    <td>
+      <b>Kubernetes Platform Components</b>
+      <ul>
+        <li>AWS Load Balancer Controller</li>
+        <li>Karpenter dynamic node provisioning</li>
+        <li>Horizontal Pod Autoscaler (HPA)</li>
+        <li>ExternalDNS with Amazon Route 53</li>
+        <li>Helm-based application deployments</li>
+      </ul>
+    </td>
+    <td>
+      <b>Dataplane Services</b>
+      <ul>
+        <li>Amazon RDS MySQL</li>
+        <li>Amazon RDS PostgreSQL</li>
+        <li>Amazon DynamoDB</li>
+        <li>Amazon ElastiCache Redis</li>
+        <li>Amazon SQS</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <b>DevOps & GitOps</b>
+      <ul>
+        <li>Terraform infrastructure provisioning</li>
+        <li>GitHub Actions CI/CD pipelines</li>
+        <li>ArgoCD GitOps deployments</li>
+        <li>Argo Rollouts for progressive delivery</li>
+        <li>Amazon ECR container registry</li>
+      </ul>
+    </td>
+    <td>
+      <b>Observability Stack</b>
+      <ul>
+        <li>AWS Distro for OpenTelemetry</li>
+        <li>Amazon CloudWatch</li>
+        <li>Amazon Managed Prometheus</li>
+        <li>Amazon Managed Grafana</li>
+      </ul>
+    </td>
+    <td>
+    </td>
+  </tr>
+</table>
+
 
 ## Implementation
 ### Pre-requisites

@@ -56,7 +56,7 @@ resource "aws_eks_cluster" "main" {
   #
   # authentication_mode = "API_AND_CONFIG_MAP"
   # → This means we are using both methods:
-  #    1. The old way (aws-auth ConfigMap) – still works for all our demos
+  #    1. The old way (aws-auth ConfigMap) – still works 
   #    2. The new way (Access Entries API) – future-proof for AWS direction
   #
   # bootstrap_cluster_creator_admin_permissions = true

@@ -1,6 +1,6 @@
 aws_region = "eu-central-1"
 environment_name = "prod"
-cluster_name = "eksdemo"
+cluster_name = "eks"
 cluster_service_ipv4_cidr = "172.22.0.0/16"
 cluster_version = "1.33"
 
