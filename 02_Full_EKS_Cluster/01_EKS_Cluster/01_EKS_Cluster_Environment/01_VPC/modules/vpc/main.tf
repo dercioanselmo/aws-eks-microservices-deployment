@@ -94,7 +94,7 @@ resource "aws_route_table" "public_rt" {
   })
 }
 
-# Resource-8: Public Route Table Associations
+# Resource-8: Public Route Table Associations to Pubic Subnet
 resource "aws_route_table_association" "public_rt_assoc" {
   for_each = aws_subnet.public
 

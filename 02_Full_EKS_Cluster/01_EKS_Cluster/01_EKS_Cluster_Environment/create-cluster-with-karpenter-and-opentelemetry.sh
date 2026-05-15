@@ -4,7 +4,7 @@ set -e
 echo "==============================="
 echo "STEP-1: Create VPC using Terraform"
 echo "==============================="
-cd 01_VPC_terraform-manifests
+cd 01_VPC
 terraform init 
 terraform apply -auto-approve
 
@@ -12,7 +12,7 @@ echo
 echo "==============================="
 echo "STEP-2: Create EKS Cluster using Terraform"
 echo "==============================="
-cd ../02_EKS_terraform-manifests_with_addons
+cd ../02_EKS_with_addons
 terraform init 
 terraform apply -auto-approve
 
@@ -35,7 +35,7 @@ echo
 echo "==============================="
 echo "STEP-3: Install Karpenter using Terraform"
 echo "==============================="
-cd ../03_KARPENTER_terraform-manifests
+cd ../03_KARPENTER
 terraform init
 terraform apply -auto-approve
 
@@ -45,7 +45,7 @@ echo "STEP-4: Configure kubeconfig"
 echo "==============================="
 
 # Get the complete kubeconfig command from terraform outputs
-cd ../02_EKS_terraform-manifests_with_addons
+cd ../02_EKS_with_addons
 KUBECONFIG_CMD=$(terraform output -raw to_configure_kubectl)
 
 echo "Executing: $KUBECONFIG_CMD"
@@ -112,7 +112,7 @@ echo
 echo "========================================================"
 echo "STEP-8: Install Open Telemetry Operator using Terraform"
 echo "==============================================="
-cd ../05_OPENTELEMTRY_terraform-manifests
+cd ../05_OPENTELEMTRY
 terraform init
 terraform apply -auto-approve
 

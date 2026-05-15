@@ -48,19 +48,19 @@ Production-grade cloud-native retail platform deployed on AWS using Terraform-ba
 ### Terraform Remote State File
 The Terraform State files of all project is managed remotely in an S3 Bucket provisioned using the ***01_remote_backend_s3bucket*** terraform code.
 Execute the terraform init, validate, plan, and apply -auto-approve. Wait for the Output, and copy the bucket ID just provisioned. This ID will be used throughout the Terraform project components.
-```bash
-TODO: Show the VPC output lines of Remote state file used in the next deployment
-```
+
 ### VPC
 ![Retail Store Microservices Application Stack](images/03_VPC.png)
 
 The platform network layer is built within a dedicated AWS VPC using the CIDR block 10.0.0.0/16. The VPC is distributed across three Availability Zones to ensure high availability, fault tolerance, and resilient service communication.
-The network topology comprises:
- - 3 Public Subnets distributed across 3 AZs 
- - 3 Private Subnets distributed across 3 AZs 
+The following resources are created by the terraform project:
+ - 1 VPC
  - 1 Internet Gateway
+ - 3 Public Subnets distributed across
+ - 3 Private Subnets distributed across
+ - 3 Elastic IP for Nat Gateways
  - 3 NAT Gateway
- - Dedicated public and private route tables 
+ - Dedicated public and private route tables and it's association to respective Subnets
 
 The VPC Public and Private subnets calculation:
 ```bash
@@ -93,6 +93,15 @@ The terraform project source code that defines VPC have the following structure:
 | `modules/vpc/variables.tf` | Defines module-scoped input variables to parameterize VPC deployment behavior, enabling reusable and environment-agnostic infrastructure provisioning. |
 | `terraform.tfvars` | Provides environment-specific runtime values for Terraform variables including AWS region, CIDR ranges, subnet sizing, environment naming, and tagging metadata. |
 
+##### VPC Terraform code execution output
+![VPC Terraform code execution output](images/05_VPC_Terraform_output.png)
+
+##### VPC Console Resource map
+![VPC Console Resource map](images/06_VPC_console_resource_map.png)
+
+##### VPC Console tags
+![VPC Console tags](images/07_VPC_console_tags.png)
+
 ### EKS Cluster
 ![EKS Cluster](images/04_EKS.png)
 
@@ -106,7 +115,7 @@ The Terraform project responsible for provisioning and configuring the platform 
 | `c2_variables.tf` | Defines all input parameters for the EKS platform including AWS regions, environment metadata, cluster configuration, endpoint exposure settings, node group sizing, and tagging strategy. Acts as the global configuration interface for the entire EKS infrastructure layer. |
 | `c3_remote-state.tf` | Consumes VPC state from a remote S3 backend using Terraform remote state data source, enabling cross-stack infrastructure integration. Exposes VPC ID and subnet topology to EKS for cluster networking and node placement. |
 | `c4_datasources_and_locals.tf` | Computes deterministic naming conventions using Terraform locals to standardize resource identity across the platform. Builds structured naming hierarchy combining business division, environment, and cluster identifiers for consistent tagging and resource naming. |
-| `c5_eks_tags.tf` | Applies required AWS EKS subnet tagging model for Kubernetes load balancer integration and node provisioning. Marks subnets as owned to enable worker node and Karpenter provisioning, while configuring ELB and internal ELB routing for service exposure across public and private subnets. |
+| `c5_eks_tags.tf` |  Are the glue that connects AWS networking to the Kubernetes services. Applies required AWS EKS subnet tagging model for Kubernetes load balancer integration and node provisioning. Marks subnets as owned to enable worker node and Karpenter provisioning, while configuring ELB and internal ELB routing for service exposure across public and private subnets. |
 | `c6_eks_cluster_iamrole.tf` | Creates the IAM role assumed by the Amazon EKS control plane through an STS trust policy with eks.amazonaws.com. Attaches AmazonEKSClusterPolicy for cluster management operations and AmazonEKSVPCResourceController for ENI and advanced VPC networking management required by production EKS workloads. |
 | `c7_eks_cluster.tf` | Provisions the Amazon EKS control plane with private subnet integration, configurable public/private API endpoint access, Kubernetes service CIDR allocation, and control plane logging enabled for API, audit, authentication, scheduler, and controller visibility. Configures hybrid authentication using both aws-auth ConfigMap and EKS Access Entries API while automatically granting cluster-admin |
 | `c8_eks_nodegroup_iamrole.tf` | Creates the IAM role assumed by EC2 worker nodes in the EKS managed node group. Attaches AmazonEKSWorkerNodePolicy for Kubernetes node operations, AmazonEKS_CNI_Policy for ENI/network management through the VPC CNI plugin, and AmazonEC2ContainerRegistryReadOnly for pulling container images from Amazon ECR. |
