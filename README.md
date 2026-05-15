@@ -147,6 +147,45 @@ EKS Cluster Terraform Apply Output
 ![EKS Cluster Terraform Apply Output](images/08_EKS_Cluster_output_1.png)
 ![EKS Cluster Terraform Apply Output](images/09_EKS_Cluster_output_2.png)
 
+EKS Cluster Karpenter Terraform Apply Output
+![EKS Cluster Karpenter Terraform Apply Output](images/10_EKS_Karpenter_output.png)
+
+EKS Cluster OpenTelemetry Terraform Apply Output
+![EKS Cluster OpenTelemetry Terraform Apply Output](images/11_EKS_OpenTelemetry.png)
+
+EKS Cluster Overview
+![EKS Cluster Overview](images/12_EKS_Console_overview.png)
+
+EKS Cluster - Overview
+![EKS Cluster - Overview](images/12_EKS_Console_overview.png)
+
+EKS Cluster - NodeGroup
+![EKS Cluster - NodeGroup](images/13_EKS_Console_nodegroup.png)
+
+EKS Cluster - Networking
+![EKS Cluster - Networking](images/14_EKS_Console_networking.png)
+
+EKS Cluster - AddOns
+![EKS Cluster - AddOns](images/15_EKS_Console_addons.png)
+![EKS Cluster - AddOns](images/15_EKS_Console_addons_2.png)
+
+EKS Cluster - Access
+![EKS Cluster - Access](images/17_EKS_Console_access.png)
+
+EKS Cluster - NodeGroup details
+![EKS Cluster - NodeGroup details](images/18_EKS_Console_Nodegroup2.png)
+
+EKS Cluster - EC2 Nodes
+![EKS Cluster - EC2 Nodes details](images/20_EKS_Console_EC2_Nodes.png)
+
+EKS Cluster - IAM Roles
+![EKS Cluster - IAM Roles](images/21_EKS_Console_IAM_Roles.png)
+
+EKS Cluster - IAM Policies
+![EKS Cluster - IAM Policies](images/22_EKS_Console_IAM_Policies.png)
+
+---
+
 #### The provisioning Terraform project source code files:
 ##### Core EKS Cluster + AddOns
 | File | Description |
