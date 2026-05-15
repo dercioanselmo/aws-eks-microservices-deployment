@@ -136,13 +136,19 @@ The terraform project source code that defines VPC have the following structure:
 ##### VPC Console tags
 ![VPC Console tags](images/07_VPC_console_tags.png)
 
+---
+
 ### EKS Cluster
 ![EKS Cluster](images/04_EKS.png)
 
 The environment consists of an AWS-managed Kubernetes control plane distributed across multiple Availability Zones, initially backed by three EC2 On-Demand worker nodes.
-The Terraform project responsible for provisioning and configuring the platform is organized as bellow:
+#### The Terraform Output, as well the the resource viewed in the console
+EKS Cluster Terraform Apply Output
+![EKS Cluster Terraform Apply Output](images/08_EKS_Cluster_output_1.png)
+![EKS Cluster Terraform Apply Output](images/09_EKS_Cluster_output_2.png)
 
-### Core EKS Cluster + AddOns
+#### The provisioning Terraform project source code files:
+##### Core EKS Cluster + AddOns
 | File | Description |
 |------|-------------|
 | `c1_versions.tf` | Pins Terraform CLI and provider versions (AWS, Kubernetes, Helm, HTTP) to ensure deterministic IaC execution across environments. Configures remote state backend in Amazon S3 with encryption and state locking to guarantee consistent multi-user Terraform state management. |
@@ -172,7 +178,7 @@ The Terraform project responsible for provisioning and configuring the platform 
 | `c17-03-externaldns-eksaddon.tf` | Deploys ExternalDNS as an EKS managed add-on with dynamic version selection, enabling automated DNS record creation and lifecycle management from Kubernetes service and ingress resources. |
 | `c18_eksaddon_metrics_server.tf` | Installs Metrics Server as an EKS add-on for Kubernetes resource metrics collection, enabling Horizontal Pod Autoscaler (HPA) functionality and cluster-level CPU/memory utilization monitoring. |
 
-### Karpenter Terraform
+##### Karpenter Terraform
 | File | Description |
 |------|-------------|
 | `c1_versions.tf` | Pins Terraform CLI and provider versions (AWS, Kubernetes, Helm, HTTP) to ensure deterministic IaC execution across environments. Configures remote state backend in Amazon S3 with encryption and state locking to guarantee consistent multi-user Terraform state management. |
@@ -192,14 +198,14 @@ The Terraform project responsible for provisioning and configuring the platform 
 | `c6_09_karpenter_service_linked_roles.tf` | Provisions AWS service-linked roles for EC2 Spot and Spot Fleet. Required for Karpenter to execute fleet-based provisioning and Spot instance lifecycle operations. |
 | `terraform.tfvars` | Defines environment-scoped configuration for Karpenter layer (region, tags, business domain). Ensures consistent tagging and separation of environments for multi-account / multi-cluster scaling strategies. |
 
-### Karpenter Kubernetes manifests
+##### Karpenter Kubernetes manifests
 | File | Description |
 |------|-------------|
 | `01_ec2nodeclass.yaml` | Defines the AWS infrastructure template Karpenter uses to launch EC2 worker nodes, including AMI, IAM role, storage, subnets, and security groups. |
 | `02_nodepool_ondemand.yaml` | Defines an On-Demand Karpenter NodePool for stable workloads using controlled EC2 instance families, sizes, and AZs. |
 | `03_nodepool_spot.yaml` | Defines a Spot-based Karpenter NodePool optimized for cost-efficient autoscaling using EC2 Spot instances, with multiple families and sizes across several AZs, automatic node consolidation and controlled disruption handling for interrupted or underutilized Spot nodes. |
 
-### OpenTelemetry Terraform
+#### OpenTelemetry Terraform
 | File | Description |
 |------|-------------|
 | `c1_versions.tf` | Pins Terraform CLI and provider versions (AWS, Kubernetes, Helm, HTTP) to ensure deterministic IaC execution across environments. Configures remote state backend in Amazon S3 with encryption and state locking to guarantee consistent multi-user Terraform state management. |
@@ -221,7 +227,7 @@ The Terraform project responsible for provisioning and configuring the platform 
 | `c8_02_amg_grafana_iam_role.tf` | Creates the IAM Role assumed by Amazon Managed Grafana. Attaches Prometheus, SNS, and X-Ray access policies. Enables Grafana workspace integration with AWS observability services. |
 | `c8_03_amg_grafana.tf` | Deploys an Amazon Managed Grafana workspace integrated with AWS SSO. Configures Prometheus, CloudWatch, and X-Ray as monitoring data sources. Provides centralized dashboards, alerting, and observability visualization for the EKS platform. |
 
-### AWS Managed Dataplane Terraform
+##### AWS Managed Dataplane Terraform
 | File | Description |
 |------|-------------|
 | `c1_versions.tf` | Pins Terraform CLI and provider versions (AWS, Kubernetes, Helm, HTTP) to ensure deterministic IaC execution across environments. Configures remote state backend in Amazon S3 with encryption and state locking to guarantee consistent multi-user Terraform state management. |
@@ -251,7 +257,7 @@ The Terraform project responsible for provisioning and configuring the platform 
 | `c9_06_orders_aws_sqs_queue.tf` | Creates an Amazon SQS queue for asynchronous order processing. Provides decoupled messaging between microservices and backend workflows. Improves resiliency and buffering for order events. |
 | `c9_07_orders_aws_sqs_iam_policy.tf` | Creates and attaches IAM permissions for Orders pods to access SQS. Allows sending, receiving, deleting, and querying queue messages. Extends the existing Orders Pod Identity role with messaging capabilities. |
 
-### Observability - OpenTelemetry
+##### Observability - OpenTelemetry
 | File | Description |
 |------|-------------|
 | `01_adot_collector_traces.yaml` | Deploys an ADOT OpenTelemetry Collector for distributed tracing in EKS. Receives OTLP traces from all microservices, enriches them with Kubernetes metadata, and exports them to AWS X-Ray. Filters health-check traffic and batches traces for efficient processing. |
