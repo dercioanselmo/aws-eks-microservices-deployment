@@ -167,7 +167,7 @@ EKS Cluster - Networking
 
 EKS Cluster - AddOns
 ![EKS Cluster - AddOns](images/15_EKS_Console_addons.png)
-![EKS Cluster - AddOns](images/15_EKS_Console_addons_2.png)
+![EKS Cluster - AddOns](images/16_EKS_Console_addons_2.png)
 
 EKS Cluster - Access
 ![EKS Cluster - Access](images/17_EKS_Console_access.png)
@@ -177,6 +177,12 @@ EKS Cluster - NodeGroup details
 
 EKS Cluster - EC2 Nodes
 ![EKS Cluster - EC2 Nodes details](images/20_EKS_Console_EC2_Nodes.png)
+
+K8s - kubectl get nodes
+![EKS Cluster - EC2 Nodes details](images/23_K8s_nodes.png)
+
+K8s - kubectl get ec2nodeclass and nodepool for Karpenter node autoscale
+![EKS Cluster - EC2 Nodes details](images/24_K8s_ec2nodeclass_nodepool.png)
 
 EKS Cluster - IAM Roles
 ![EKS Cluster - IAM Roles](images/21_EKS_Console_IAM_Roles.png)
