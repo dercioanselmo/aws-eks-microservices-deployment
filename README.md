@@ -190,6 +190,25 @@ EKS Cluster - IAM Roles
 EKS Cluster - IAM Policies
 ![EKS Cluster - IAM Policies](images/22_EKS_Console_IAM_Policies.png)
 
+EKS Cluster - Dataplane Terraform output
+![EKS Cluster - Dataplane Terraform output](images/25_EKS_Dataplane_output.png)
+
+EKS Cluster - RDS MySQL and PostgreSQL for Catalog and Orders microservices
+![EKS Cluster - Dataplane Terraform output](images/26_EKS_Dataplane_RDS_MySQL_Postgres.png)
+
+EKS Cluster - Amazon SQS for Orders Microservice and Karpenter spot nodes autoscale management
+![EKS Cluster - Amazon SQS for Orders Microservice and Karpenter spot nodes autoscale management](images/27_EKS_Dataplane_SQS_for_orders_and_for_karpenter.png)
+
+EKS Cluster - Amazon ElasticCache - Redis, for Checkout microservice
+![EKS Cluster - Amazon ElasticCache - Redis, for Checkout microservice](images/28_EKS_Dataplane_ElasticCache_Redis_for_checkout_microservice.png)
+
+EKS Cluster - Amazon DynamoDB table for Cart microservice
+![EKS Cluster - Amazon DynamoDB table for Cart microservice](images/29_EKS_Dataplane_DynamoDB.png)
+
+EKS Cluster - AWS Secret Manager, storing the database credentials for RDS MySQL and Postgre databases
+![EKS Cluster - AWS Secret Manager](images/30_EKS_Secret_manager.png)
+
+
 ---
 
 #### The provisioning Terraform project source code files:
