@@ -77,6 +77,12 @@ Production-grade cloud-native retail platform deployed on AWS using Terraform-ba
 The Terraform State files of all project is managed remotely in an S3 Bucket provisioned using the ***01_remote_backend_s3bucket*** terraform code.
 Execute the terraform init, validate, plan, and apply -auto-approve. Wait for the Output, and copy the bucket ID just provisioned. This ID will be used throughout the Terraform project components.
 
+```bach
+apple@apples-MacBook-Pro 01_remote_backend_s3bucket % terraform output                                                 
+tfstate_bucket_arn = "arn:aws:s3:::tfstate-dev-eu-central-1-a65beq"
+tfstate_bucket_id = "tfstate-dev-eu-central-1-a65beq"
+```
+
 ### VPC
 ![Retail Store Microservices Application Stack](images/03_VPC.png)
 
