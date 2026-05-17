@@ -1,6 +1,20 @@
 #!/bin/bash
 set -e
 
+# ======================
+# Terraform Docker Wrapper
+# ======================
+terraform() {
+    docker run --rm -it \
+        -v "$(pwd):/workspace" \
+        -v ~/.aws:/root/.aws \
+        -e AWS_PROFILE \
+        -e AWS_REGION \
+        -w /workspace \
+        hashicorp/terraform:latest "$@"
+}
+
+
 echo "==============================="
 echo "STEP-1: Create VPC using Terraform"
 echo "==============================="
@@ -114,6 +128,13 @@ echo "STEP-8: Install Open Telemetry Operator using Terraform"
 echo "==============================================="
 cd ../05_OPENTELEMTRY
 terraform init
+terraform apply -auto-approve
+
+echo "============================================================"
+echo "STEP-9: Create RetailStore AWS Dataplane using Terraform"
+echo "============================================================"
+cd ../06_AWS_Data_Plane_terraform
+terraform init 
 terraform apply -auto-approve
 
 echo

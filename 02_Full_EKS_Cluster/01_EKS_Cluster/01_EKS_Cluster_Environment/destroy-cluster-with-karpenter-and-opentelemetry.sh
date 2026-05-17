@@ -1,6 +1,20 @@
 #!/bin/bash
 set -e
 
+# ======================
+# Terraform Docker Wrapper
+# ======================
+terraform() {
+    docker run --rm -it \
+        -v "$(pwd):/workspace" \
+        -v ~/.aws:/root/.aws \
+        -e AWS_PROFILE \
+        -e AWS_REGION \
+        -w /workspace \
+        hashicorp/terraform:latest "$@"
+}
+
+
 echo
 echo "========================================================"
 echo "STEP-00: Destroy Open Telemetry Operator - Terraform"
