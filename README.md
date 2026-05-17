@@ -71,7 +71,48 @@ Production-grade cloud-native retail platform deployed on AWS using Terraform-ba
    - Save Access Key ID and Secret Access Key
  - Terraform CLI
  - AWS CLI
+ - manually create the secrets_manager secret using the console. secret name: retailstore-db-secret-1, secret keys: username and password. These credentials are used by both RDS databases (MySQL and Postgree)
  - VS Code and Terraform Extension
+
+### Run full EKS Cluster provisioning
+Execite the script ./create-cluster-with-karpenter-and-opentelemetry.sh
+It will run terraform apply and provision provision:
+ - VPC
+ - EKS Cluster with basic AddOns
+ - Install and configure Karpenter to the EKS Cluster just provisioned
+ - Apply ec2nodeclass, nodepool_ondemand and nodepool_spot to be used by Karpenter for node auto-scale
+ - Install and configure OpenTelemetry (ADOT, Certmanager, Metric Server, Amazon managed Prometheus)
+ - Provision AWS RDS MySQL, PostgreSQL, DynamoDB, Elastic Cache Redis and SQS
+ - Test database connection
+
+After full provisioning, the admin must manually locate the database connection in the terraform output of the dataplane provisioning:
+ - catalog_rds_endpoint = "mydb3.cs1824wy44gd.us-east-1.rds.amazonaws.com"
+ - checkout_redis_endpoint = "retail-dev-checkout-redis.ai01ey.0001.use1.cache.amazonaws.com"
+ - orders_rds_postgresql_endpoint = "orders-postgres-db.cs1824wy44gd.us-east-1.rds.amazonaws".com:5432" 
+Update the following value.yaml files in the application repository helm chart:
+ - "mydb3.cs1824wy44gd.us-east-1.rds.amazonaws.com" --> values-catalog.yaml 
+  ```bach
+    persistence:
+      provider: mysql
+      endpoint: "mydb3.cs1824wy44gd.us-east-1.rds.amazonaws.com"
+      database: "catalogdb"
+  ```
+ - "retail-dev-checkout-redis.ai01ey.0001.use1.cache.amazonaws.com" --> values-checkout.yaml 
+  ```bach
+    persistence:
+      provider: redis
+      redis:
+        endpoint: retail-dev-checkout-redis.ai01ey.0001.use1.cache.amazonaws.com:6379
+  ```
+  - "orders-postgres-db.cs1824wy44gd.us-east-1.rds.amazonaws" - values-orders-v2.0.0.yaml
+  ```bach
+    persistence:
+      provider: postgres
+      endpoint: orders-postgres-db.cs1824wy44gd.us-east-1.rds.amazonaws.com:5432
+      database: ordersdb
+  ```
+
+Leaving the environment ready for the CICD take over and run the Retail Microservices Application
 
 ### Terraform Remote State File
 The Terraform State files of all project is managed remotely in an S3 Bucket provisioned using the ***01_remote_backend_s3bucket*** terraform code.
