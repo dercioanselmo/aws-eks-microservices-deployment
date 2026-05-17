@@ -5,14 +5,12 @@ echo
 echo "========================================================"
 echo "STEP-00: Destroy Open Telemetry Operator - Terraform"
 echo "==============================================="
-cd 05_OPENTELEMTRY_terraform-manifests
+cd 05_OPENTELEMTRY
 terraform init
 terraform destroy -auto-approve
 rm -rf .terraform .terraform.lock.hcl
 echo 
 echo "✅ Open Telemetry Terraform destroyed"
-
-
 
 
 echo "==============================="
@@ -89,7 +87,7 @@ echo
 echo "==============================="
 echo "STEP-6: Destroy Karpenter Terraform"
 echo "==============================="
-cd ../03_KARPENTER_terraform-manifests
+cd ../03_KARPENTER
 terraform init
 terraform destroy -auto-approve
 rm -rf .terraform .terraform.lock.hcl
@@ -99,7 +97,7 @@ echo
 echo "==============================="
 echo "STEP-7: Destroy EKS Cluster"
 echo "==============================="
-cd ../02_EKS_terraform-manifests_with_addons
+cd ../02_EKS_with_addons
 terraform init
 terraform destroy -auto-approve
 rm -rf .terraform .terraform.lock.hcl
@@ -109,7 +107,7 @@ echo
 echo "==============================="
 echo "STEP-8: Destroy VPC"
 echo "==============================="
-cd ../01_VPC_terraform-manifests
+cd ../01_VPC
 terraform init
 terraform destroy -auto-approve
 rm -rf .terraform .terraform.lock.hcl
