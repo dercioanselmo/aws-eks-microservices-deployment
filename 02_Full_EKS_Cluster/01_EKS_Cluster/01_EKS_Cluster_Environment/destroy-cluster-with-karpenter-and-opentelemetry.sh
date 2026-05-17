@@ -17,7 +17,7 @@ terraform() {
 echo "============================================================"
 echo "STEP-01: Destroy RetailStore AWS Dataplane using Terraform"
 echo "============================================================"
-cd ../06_AWS_Data_Plane_terraform
+cd 06_AWS_Data_Plane_terraform
 terraform init 
 terraform destroy -auto-approve
 

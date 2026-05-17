@@ -114,6 +114,8 @@ Update the following value.yaml files in the application repository helm chart:
 
 Leaving the environment ready for the CICD take over and run the Retail Microservices Application
 
+Run the script destroy-cluster-with-karpenter-and-opentelemetry.sh to destroy full cluster, inckuding the database.
+
 ### Terraform Remote State File
 The Terraform State files of all project is managed remotely in an S3 Bucket provisioned using the ***01_remote_backend_s3bucket*** terraform code.
 Execute the terraform init, validate, plan, and apply -auto-approve. Wait for the Output, and copy the bucket ID just provisioned. This ID will be used throughout the Terraform project components.
