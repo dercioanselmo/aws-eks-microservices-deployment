@@ -79,6 +79,7 @@ Execute the script ./create-cluster-with-karpenter-and-opentelemetry.sh
 It will run terraform apply and provision provision:
  - VPC
  - EKS Cluster with basic AddOns
+ - Executes the configure kubectl command: **aws eks --region us-east-1 update-kubeconfig --name retail-dev-eks**
  - Install and configure Karpenter to the EKS Cluster just provisioned
  - Apply ec2nodeclass, nodepool_ondemand and nodepool_spot to be used by Karpenter for node auto-scale
  - Install and configure OpenTelemetry (ADOT, Certmanager, Metric Server, Amazon managed Prometheus)
@@ -443,4 +444,24 @@ Once added, verify in the ArgoCD UI:
  - Go to Settings → Repositories
  - Confirm repo shows as "Successful" under Connection Status
 ![41_ArgoCD_Repository_Connect](images/41_ArgoCD_Repository_Connect.png)
- 
+
+At this stage the CD is ready to be completed. The application servives yaml manifests are located at the dir 09_argocd-helm-manifests. Manually executes the following commends:
+kubectl apply -f application-ui.yaml
+kubectl apply -f application-cart.yaml
+kubectl apply -f application-catalog.yaml
+kubectl apply -f application-checkout.yaml
+kubectl apply -f application-orders.yaml
+
+The Application resourcea will be created at ArgoCD:
+![43_ArgoCD_UI_applications](images/43_ArgoCD_UI_applications.png)
+
+The UI service application with all K8s resources visible at ArgoCD ui:
+ - ConfigMap
+ - Service
+ - ServiceAccount
+ - Deployment
+ - Horizontal Pod Autoscaler
+ - Ingress
+ - ReplicaSet
+ - Pods
+![42_ArgoCD_UI_ui_service](images/42_ArgoCD_UI_ui_service.png)
