@@ -5,6 +5,6 @@ business_division  = "retail"
 tags = {
   Terraform   = "true"
   Environment = "dev"
-  Project     = "karpenter-autoscaling"
+  Project     = "Amazon ECR"
   ManagedBy   = "platform-team"
 }
