@@ -133,7 +133,7 @@ terraform apply -auto-approve
 echo "============================================================"
 echo "STEP-9: Create RetailStore AWS Dataplane using Terraform"
 echo "============================================================"
-cd ../06_AWS_Data_Plane_terraform
+cd ../06_01_AWS_Data_Plane_terraform
 terraform init 
 terraform apply -auto-approve
 

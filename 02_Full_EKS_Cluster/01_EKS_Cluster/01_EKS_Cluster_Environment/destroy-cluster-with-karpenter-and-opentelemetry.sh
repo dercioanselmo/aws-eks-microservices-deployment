@@ -17,7 +17,7 @@ terraform() {
 echo "============================================================"
 echo "STEP-01: Destroy RetailStore AWS Dataplane using Terraform"
 echo "============================================================"
-cd 06_AWS_Data_Plane_terraform
+cd 06_01_AWS_Data_Plane_terraform
 terraform init 
 terraform destroy -auto-approve
 
@@ -25,7 +25,7 @@ echo
 echo "========================================================"
 echo "STEP-00: Destroy Open Telemetry Operator - Terraform"
 echo "==============================================="
-cd 05_OPENTELEMTRY
+cd ../05_OPENTELEMTRY
 terraform init
 terraform destroy -auto-approve
 rm -rf .terraform .terraform.lock.hcl
