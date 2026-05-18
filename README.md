@@ -404,16 +404,16 @@ Bellow the repository showing 5 microservices workflows files, the actual micros
 ![GitHub Actions CI pipeline](images/31_github_actions_ci.png)
 
 CI Pipeline in action
-![GitHub Actions CI pipeline](32_github_action_ci_pipeline_detail.png)
+![GitHub Actions CI pipeline detailed](32_github_action_ci_pipeline_detail.png)
 
 CI Pipeline in action with logs
-![GitHub Actions CI pipeline](33_github_action_ci_pipeline_detail_logs.png)
+![GitHub Actions CI pipeline detailed with logs](33_github_action_ci_pipeline_detail_logs.png)
 
 Amazon ECR showing the 5 services image repositories:
-![GitHub Actions CI pipeline](34_ECR_repository.png)
+![Amazon ECR Repository](34_ECR_repository.png)
 
 Amazon ECR showing the cart microservice docker image:
-![GitHub Actions CI pipeline](35_ECR_repository_image.png)
+![Amazon ECR Repository detailed](35_ECR_repository_image.png)
 
 This CI is still plain. todo: Sonarqube and other guardrails still to be implemented
 Completing the full CI portion of the CICD. Ensuring no intersection between CI and CD.
