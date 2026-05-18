@@ -445,7 +445,7 @@ Once added, verify in the ArgoCD UI:
  - Confirm repo shows as "Successful" under Connection Status
 ![41_ArgoCD_Repository_Connect](images/41_ArgoCD_Repository_Connect.png)
 
-At this stage the CD is ready to be completed. The application servives yaml manifests are located at the dir 09_argocd-helm-manifests. Manually executes the following commends:
+At this stage the CD is ready to be completed. The argocd application yaml manifests are located at the dir 09_argocd-helm-manifests. Manually executes the following commends:
 kubectl apply -f application-ui.yaml
 kubectl apply -f application-cart.yaml
 kubectl apply -f application-catalog.yaml
