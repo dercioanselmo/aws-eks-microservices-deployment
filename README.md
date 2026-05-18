@@ -85,11 +85,13 @@ It will run terraform apply and provision provision:
  - Provision AWS RDS MySQL, PostgreSQL, DynamoDB, Elastic Cache Redis and SQS
  - Test database connection
 
-After full provisioning, the admin must manually locate the database connection in the terraform output of the dataplane provisioning:
+After full provisioning, the admin must manually locate the database connection URLs in the terraform output of the dataplane provisioning:
+![EKS Cluster - Dataplane Terraform output](images/26_EKS_Dataplane_RDS_MySQL_Postgres.png)
+
  - catalog_rds_endpoint = "mydb3.cs1824wy44gd.us-east-1.rds.amazonaws.com"
  - checkout_redis_endpoint = "retail-dev-checkout-redis.ai01ey.0001.use1.cache.amazonaws.com"
  - orders_rds_postgresql_endpoint = "orders-postgres-db.cs1824wy44gd.us-east-1.rds.amazonaws".com:5432" 
-Update the following value.yaml files in the application repository helm chart:
+Update the following value.yaml files in the application repository helm chart (Application repository is detailed in the Applcation deployment into the cluster section):
  - "mydb3.cs1824wy44gd.us-east-1.rds.amazonaws.com" --> values-catalog.yaml 
   ```bach
     persistence:
