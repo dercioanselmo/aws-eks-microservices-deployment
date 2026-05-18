@@ -75,7 +75,7 @@ Production-grade cloud-native retail platform deployed on AWS using Terraform-ba
  - VS Code and Terraform Extension
 
 ### Run full EKS Cluster provisioning
-Execite the script ./create-cluster-with-karpenter-and-opentelemetry.sh
+Execute the script ./create-cluster-with-karpenter-and-opentelemetry.sh
 It will run terraform apply and provision provision:
  - VPC
  - EKS Cluster with basic AddOns
