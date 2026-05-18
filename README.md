@@ -373,7 +373,7 @@ EKS Cluster - AWS Secret Manager, storing the database credentials for RDS MySQL
 | `01_adot_collector_prometheus_full_k8s_cluster.yaml` | Deploys an ADOT metrics collector integrated with Prometheus and Amazon Managed Prometheus (AMP). Scrapes Kubernetes cluster, node, pod, and service metrics using Prometheus discovery configurations. Processes and exports metrics securely to AMP using SigV4 authentication for Grafana visualization. |
 
 
-### Retail Store Microservices Application Stack
+## Retail Store Microservices Application Stack
 ![Retail Store Microservices Application Stack](images/02_retail_application.png)
 
 Microservices-based retail web platform deployed on Amazon EKS, composed of independently scalable and loosely coupled services.
@@ -391,3 +391,27 @@ Microservices-based retail web platform deployed on Amazon EKS, composed of inde
  - **Amazon ElastiCache Redis** — In-memory distributed caching layer used for low-latency data access, session acceleration, and performance optimization.
 #### Messaging Layer
  - **Amazon SQS** — Managed asynchronous messaging service enabling decoupled inter-service communication and event-driven workload processing.
+
+## Applcation deployment into the cluster
+Application repository: https://github.com/dercioanselmo/retail_microservices
+Bellow the repository showing 5 microservices workflows files, the actual microservices source code directories, the helm chart files templates and values.yaml. showing the example of the orders microservices.
+![Retail Store Microservices Application Repository](images/36_Application_git_repository.png)
+![Retail Store Microservices Application Repository2](images/37_Application_git_repository_2.png)
+
+### GitHub Actions CI pipeline:
+![GitHub Actions CI pipeline](images/31_github_actions_ci.png)
+
+CI Pipeline in action
+![GitHub Actions CI pipeline](32_github_action_ci_pipeline_detail.png)
+
+CI Pipeline in action with logs
+![GitHub Actions CI pipeline](33_github_action_ci_pipeline_detail_logs.png)
+
+Amazon ECR showing the 5 services image repositories:
+![GitHub Actions CI pipeline](34_ECR_repository.png)
+
+Amazon ECR showing the cart microservice docker image:
+![GitHub Actions CI pipeline](35_ECR_repository_image.png)
+
+This CI is still plain. todo: Sonarqube and other guardrails still to be implemented
+Completing the full CI portion of the CICD. Ensuring no intersection between CI and CD.
