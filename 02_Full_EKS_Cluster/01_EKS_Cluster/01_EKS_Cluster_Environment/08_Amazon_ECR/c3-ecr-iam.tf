@@ -1,5 +1,5 @@
 # =============================================
-# ECR Repositories (Multiple)
+# ECR Repositories
 # =============================================
 resource "aws_ecr_repository" "ecr" {
   for_each = toset(var.ecr_repositories)
@@ -15,9 +15,13 @@ resource "aws_ecr_repository" "ecr" {
 }
 
 # =============================================
-# GitHub OIDC Provider (Single)
+# GitHub OIDC Provider
 # =============================================
+# Not reating it again because it already exists.
+# Terraform will skip this resource.
 resource "aws_iam_openid_connect_provider" "github" {
+  count = 0   # Change to 1 only if I want Terraform to manage it later
+
   url             = "https://token.actions.githubusercontent.com"
   client_id_list  = ["sts.amazonaws.com"]
   thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
@@ -29,7 +33,7 @@ resource "aws_iam_openid_connect_provider" "github" {
 }
 
 # =============================================
-# IAM Role for GitHub Actions (Single Role for all repos)
+# IAM Role for GitHub Actions
 # =============================================
 resource "aws_iam_role" "github_actions" {
   name = var.role_name
@@ -40,7 +44,7 @@ resource "aws_iam_role" "github_actions" {
       {
         Effect = "Allow"
         Principal = {
-          Federated = aws_iam_openid_connect_provider.github.arn
+          Federated = try(aws_iam_openid_connect_provider.github[0].arn, "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com")
         }
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
@@ -55,8 +59,11 @@ resource "aws_iam_role" "github_actions" {
   tags = var.tags
 }
 
-# Attach ECR PowerUser policy (enough for all 5 repositories)
+# ECR PowerUser Policy
 resource "aws_iam_role_policy_attachment" "ecr_poweruser" {
   role       = aws_iam_role.github_actions.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 }
+
+# Get current account ID
+data "aws_caller_identity" "current" {}
