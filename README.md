@@ -84,9 +84,17 @@ It will run terraform apply and provision provision:
  - Install and configure OpenTelemetry (ADOT, Certmanager, Metric Server, Amazon managed Prometheus)
  - Provision AWS RDS MySQL, PostgreSQL, DynamoDB, Elastic Cache Redis and SQS
  - Test database connection
+ - Create AWS ECR ready for CI pipeline to run form retail_microservices repository
+ - Install ArgoCD 
 
 After full provisioning, the admin must manually locate the database connection URLs in the terraform output of the dataplane provisioning:
-![EKS Cluster - Dataplane Terraform output](images/26_EKS_Dataplane_RDS_MySQL_Postgres.png)
+![EKS Cluster - Dataplane Terraform output](images/38_Dataplane_terraform_output.png)
+
+Copy the kubectl port-forward svc/argocd-server -n argocd 8080:443 command from the create cluster sctipt output and run to open the ArgoCD UI, and CLI, login as instructed, it will be used in the CD section.
+![Argo CD Install script output](images/39_ArgoCD_install.png)
+
+ArgoCD UI Freshly installed in the cluster:
+![Argo CD Install script output](images/40_ArgoCD_UI_Fresh.png)
 
  - catalog_rds_endpoint = "mydb3.cs1824wy44gd.us-east-1.rds.amazonaws.com"
  - checkout_redis_endpoint = "retail-dev-checkout-redis.ai01ey.0001.use1.cache.amazonaws.com"
@@ -417,3 +425,20 @@ Amazon ECR showing the cart microservice docker image:
 
 This CI is still plain. todo: Sonarqube and other guardrails still to be implemented
 Completing the full CI portion of the CICD. Ensuring no intersection between CI and CD.
+
+### ArgoCD setup continue from after install at create cluster section
+After ArgoCD UI and CLI login, it is necessary to register the GitHub Repository with ArgoCD, manually executing te following commands:
+```bach
+argocd repo add https://github.com/dercioanselmo/retail_microservices.git \
+  --username <github-username> \
+  --password <personal-access-token> \
+  --name retail_microservices
+```
+
+How to get Github Personal Access Token?
+ - Go to Github -> Settings -> Developer Settings
+ - Go to Personal Access Tokens -> Tokens (classic) -> Generate new token
+
+Once added, verify in the ArgoCD UI:
+ - Go to Settings → Repositories
+ - Confirm repo shows as "Successful" under Connection Status

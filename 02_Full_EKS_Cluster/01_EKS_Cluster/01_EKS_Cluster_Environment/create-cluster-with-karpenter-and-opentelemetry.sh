@@ -137,6 +137,20 @@ cd ../06_01_AWS_Data_Plane_terraform
 terraform init 
 terraform apply -auto-approve
 
+
+echo "============================================================"
+echo "STEP-9: Create ECR using Terraform"
+echo "============================================================"
+cd ../08_Amazon_ECR
+terraform init 
+terraform apply -auto-approve
+
+echo "============================================================"
+echo "STEP-10: Install ArgoCD"
+echo "============================================================"
+cd ..
+install-argocd.sh
+
 echo
 echo "✅ All Open Telemetry Terraform manifests applied successfully!"
 
@@ -155,6 +169,8 @@ echo "✅ EC2NodeClass applied"
 echo "✅ OnDemand NodePool applied"
 echo "✅ Spot NodePool applied"
 echo "✅ Open Telemetry EKS Addons applied"
+echo "✅ Dataplane applied"
+echo "✅ ECR Applied"
 echo
 echo "Your EKS Cluster with Karpenter is now fully configured and ready to use!"
 echo "==============================="

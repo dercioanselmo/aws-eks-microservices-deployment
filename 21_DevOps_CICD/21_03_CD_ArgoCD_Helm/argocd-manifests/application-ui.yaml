@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/dercioanselmo/aws-devops-github-actions-ecr-argocd3.git
+    repoURL: https://github.com/dercioanselmo/retail_microservices.git
     targetRevision: main
     path: src/ui/chart
     helm:
