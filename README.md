@@ -442,3 +442,5 @@ How to get Github Personal Access Token?
 Once added, verify in the ArgoCD UI:
  - Go to Settings → Repositories
  - Confirm repo shows as "Successful" under Connection Status
+![41_ArgoCD_Repository_Connect](images/41_ArgoCD_Repository_Connect.png)
+ 
