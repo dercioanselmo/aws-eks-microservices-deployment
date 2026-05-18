@@ -465,3 +465,9 @@ The UI service application with all K8s resources visible at ArgoCD ui:
  - ReplicaSet
  - Pods
 ![42_ArgoCD_UI_ui_service](images/42_ArgoCD_UI_ui_service.png)
+
+Checkout Application just auto synced with last commint fixing the image repository in the helm chart values.yaml file.
+The Commit:
+![46_helm_chart_values_file_updated](images/46_helm_chart_values_file_updated.png)
+The Sync (GitOps in action):
+![45_ArgoCD_Checkout_application](images/45_ArgoCD_Checkout_application.png)
