@@ -489,3 +489,18 @@ ArgoCD automatically (3min periods) triggered the sync
 
 Application UI change reflecting, completing the End to End CICD:
 ![56_application_ui_updated](images/56_application_ui_updated.png)
+
+#### GitOps In action:
+Update the minReplicas: from 1 to 3. Just commit the change in the helm chart values file:
+![58_updating_replicaset_number](images/58_updating_replicaset_number.png)
+
+ArgoCD auto Sync, inreasing the replicas:
+![59_ArgoCD_in_action_gitops](images/59_ArgoCD_in_action_gitops.png)
+
+ArgoCD rollout in action, avoiding downtime with the new commit:
+![60_ArgoCD_in_action_gitops2](images/60_ArgoCD_in_action_gitops2.png)
+Rollingout:
+![61_ArgoCD_in_action_gitops3](images/61_ArgoCD_in_action_gitops3.png)
+
+Rollout finished smoothly:
+![62_ArgoCD_in_action_gitop4](images/62_ArgoCD_in_action_gitop4.png)
