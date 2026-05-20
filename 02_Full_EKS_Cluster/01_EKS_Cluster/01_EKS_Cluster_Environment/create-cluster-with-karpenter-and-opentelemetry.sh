@@ -148,8 +148,8 @@ terraform apply -auto-approve
 echo "============================================================"
 echo "STEP-10: Install ArgoCD"
 echo "============================================================"
-cd ..
-install-argocd.sh
+cd ../09_ArgoCD_Install
+./install-argocd.sh
 
 echo
 echo "✅ All Open Telemetry Terraform manifests applied successfully!"

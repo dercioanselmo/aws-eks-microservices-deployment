@@ -1,6 +1,6 @@
 # Retail Store Microservices Production Deployment
 
-Production-grade cloud-native retail platform deployed on AWS using Terraform-based Infrastructure as Code (IaC) with remote state management in Amazon S3. The platform is designed for high availability, scalability, security, and fully automated continuous delivery.
+The objective of this project is to externalise how I have been deploying production applications on my clients. I a production-grade cloud-native retail platform deployed on AWS using Terraform-based Infrastructure as Code (IaC) with remote state management in Amazon S3. The platform is designed for high availability, scalability, security, and fully automated continuous delivery.
 
 <table>
   <tr>
@@ -446,13 +446,13 @@ Once added, verify in the ArgoCD UI:
 ![41_ArgoCD_Repository_Connect](images/41_ArgoCD_Repository_Connect.png)
 
 At this stage the CD is ready to be completed. The argocd application yaml manifests are located at the dir 09_argocd-helm-manifests. Manually executes the following commends:
-kubectl apply -f application-ui.yaml
-kubectl apply -f application-cart.yaml
-kubectl apply -f application-catalog.yaml
-kubectl apply -f application-checkout.yaml
-kubectl apply -f application-orders.yaml
+  kubectl apply -f application-ui.yaml
+  kubectl apply -f application-cart.yaml
+  kubectl apply -f application-catalog.yaml
+  kubectl apply -f application-checkout.yaml
+  kubectl apply -f application-orders.yaml
 
-The Application resourcea will be created at ArgoCD:
+The Application resources will be created at ArgoCD:
 ![43_ArgoCD_UI_applications](images/43_ArgoCD_UI_applications.png)
 
 The UI service application with all K8s resources visible at ArgoCD ui:

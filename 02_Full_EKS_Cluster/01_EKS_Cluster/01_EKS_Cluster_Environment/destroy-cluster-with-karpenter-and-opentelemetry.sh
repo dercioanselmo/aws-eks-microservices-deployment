@@ -14,10 +14,20 @@ terraform() {
         hashicorp/terraform:latest "$@"
 }
 
+./cleanup-ecr.sh
+
+echo "============================================================"
+echo "STEP-01: Destroy ECR Registry"
+echo "============================================================"
+cd 08_Amazon_ECR
+terraform init 
+terraform destroy -auto-approve
+
+
 echo "============================================================"
 echo "STEP-01: Destroy RetailStore AWS Dataplane using Terraform"
 echo "============================================================"
-cd 06_01_AWS_Data_Plane_terraform
+cd ../06_01_AWS_Data_Plane_terraform
 terraform init 
 terraform destroy -auto-approve
 
