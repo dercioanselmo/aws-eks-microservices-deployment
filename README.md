@@ -439,9 +439,7 @@ argocd repo add https://github.com/dercioanselmo/retail_microservices.git \
 How to get Github Personal Access Token?
  - Go to Github -> Settings -> Developer Settings
  - Go to Personal Access Tokens -> Tokens (classic) -> Generate new token
-![47_Application_Repository_access_token_for_argoCD
-](images/47_Application_Repository_access_token_for_argoCD
-.png)
+![47_Application_Repository_access_token_for_argoCD](images/47_Application_Repository_access_token_for_argoCD.png)
 
 Once added, verify in the ArgoCD UI:
  - Go to Settings → Repositories
@@ -457,6 +455,10 @@ At this stage the CD is ready to be completed. The argocd application yaml manif
 
 The Application resources will be created at ArgoCD:
 ![43_ArgoCD_UI_applications](images/43_ArgoCD_UI_applications.png)
+
+After all application processed:
+![48_ArgoCD_Applications_full_synced](images/48_ArgoCD_Applications_full_synced.png)
+
 
 The UI service application with all K8s resources visible at ArgoCD ui:
  - ConfigMap
