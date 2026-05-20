@@ -409,23 +409,6 @@ Bellow the repository showing 5 microservices workflows files, the actual micros
 ![Retail Store Microservices Application Repository](images/36_Application_git_repository.png)
 ![Retail Store Microservices Application Repository2](images/37_Application_git_repository_2.png)
 
-### GitHub Actions CI pipeline:
-![GitHub Actions CI pipeline](images/31_github_actions_ci.png)
-
-CI Pipeline in action
-![GitHub Actions CI pipeline detailed](images/32_github_action_ci_pipeline_detail.png)
-
-CI Pipeline in action with logs
-![GitHub Actions CI pipeline detailed with logs](images/33_github_action_ci_pipeline_detail_logs.png)
-
-Amazon ECR showing the 5 services image repositories:
-![Amazon ECR Repository](images/34_ECR_repository.png)
-
-Amazon ECR showing the cart microservice docker image:
-![Amazon ECR Repository detailed](images/35_ECR_repository_image.png)
-
-This CI is still plain. todo: Sonarqube and other guardrails still to be implemented
-Completing the full CI portion of the CICD. Ensuring no intersection between CI and CD.
 
 ### ArgoCD setup continue from after install at create cluster section
 After ArgoCD UI and CLI login, it is necessary to register the GitHub Repository with ArgoCD, manually executing te following commands:
@@ -487,3 +470,22 @@ The Application UI in the browser:
 Custom endpoint built to show services status, all showing healthy.
 ![51_Retail_app_topology_endpoint](images/51_Retail_app_topology_endpoint.png)
 
+
+#### CICD In action:
+UI code change commit:
+![52_code_change_commit](images/52_code_change_commit.png)
+
+Github action pipeline:
+![53_github_action_CI](images/53_github_action_CI.png)
+
+Amazon ECR updated with last build:
+![54_ecr_updated_last image](images/54_ecr_updated_last image.png)
+
+Amazon ECR showing the 5 services image repositories:
+![Amazon ECR Repository](images/34_ECR_repository.png)
+
+ArgoCD automatically (3min periods) triggered the sync
+![55_argocd_sync_triggered](images/55_argocd_sync_triggered.png)
+
+Application UI change reflecting, completing the End to End CICD:
+![56_application_ui_updated](images/56_application_ui_updated.png)
