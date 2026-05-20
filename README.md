@@ -449,11 +449,11 @@ Once added, verify in the ArgoCD UI:
 ![41_ArgoCD_Repository_Connect](images/41_ArgoCD_Repository_Connect.png)
 
 At this stage the CD is ready to be completed. The argocd application yaml manifests are located at the dir 09_argocd-helm-manifests. Manually executes the following commends:
-  kubectl apply -f application-ui.yaml
-  kubectl apply -f application-cart.yaml
-  kubectl apply -f application-catalog.yaml
-  kubectl apply -f application-checkout.yaml
-  kubectl apply -f application-orders.yaml
+ - kubectl apply -f application-ui.yaml
+ - kubectl apply -f application-cart.yaml
+ - kubectl apply -f application-catalog.yaml
+ - kubectl apply -f application-checkout.yaml
+ - kubectl apply -f application-orders.yaml
 
 The Application resources will be created at ArgoCD:
 ![43_ArgoCD_UI_applications](images/43_ArgoCD_UI_applications.png)
