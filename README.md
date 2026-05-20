@@ -476,3 +476,14 @@ The Commit:
 ![46_helm_chart_values_file_updated](images/46_helm_chart_values_file_updated.png)
 The Sync (GitOps in action):
 ![45_ArgoCD_Checkout_application](images/45_ArgoCD_Checkout_application.png)
+
+Testing the application:
+Check pods and get ui ingress url for test on browser:
+![49_getpods_and_ui_ingress_url](images/49_getpods_and_ui_ingress_url.png)
+
+The Application UI in the browser:
+![50_Retail_app_UI](images/50_Retail_app_UI.png)
+
+Custom endpoint built to show services status, all showing healthy.
+![51_Retail_app_topology_endpoint](images/51_Retail_app_topology_endpoint.png)
+
