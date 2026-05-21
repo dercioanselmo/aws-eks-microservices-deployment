@@ -504,3 +504,15 @@ Rollingout:
 
 Rollout finished smoothly:
 ![62_ArgoCD_in_action_gitop4](images/62_ArgoCD_in_action_gitop4.png)
+
+
+### Observability - OpenTelemetry
+It is enabled as part of the EKS Cluster terraform project (folder 05_OPENTELEMTRY).
+Automatic OpenTelemetry instrumentation injection into the application pod, to be used for distributed tracing, metrics, and telemetry collection. Prometheus enabled scraping for the pods of this deployment:
+![65_open_telemetry_enabled_deployment](images/65_open_telemetry_enabled_deployment.png)
+
+Amazon Prometheus workspace provisioned as part of the terraform OpenTelemetry folder:
+![63_amazon_prometheus](images/63_amazon_prometheus.png)
+
+Amazon Grafana workspace:
+![64_amazon_grafana](images/64_amazon_grafana.png)
