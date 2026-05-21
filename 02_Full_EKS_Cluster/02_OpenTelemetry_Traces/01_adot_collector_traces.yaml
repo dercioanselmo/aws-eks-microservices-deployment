@@ -136,4 +136,5 @@ spec:
             - batch                   # 4. Efficient batching
           exporters: 
             - awsxray
+            - debug
             

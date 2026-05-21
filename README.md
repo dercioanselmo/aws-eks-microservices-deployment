@@ -506,7 +506,7 @@ Rollout finished smoothly:
 ![62_ArgoCD_in_action_gitop4](images/62_ArgoCD_in_action_gitop4.png)
 
 
-### Observability - OpenTelemetry
+### Observability - AWS Distro for OpenTelemetry (ADOT)
 It is enabled as part of the EKS Cluster terraform project (folder 05_OPENTELEMTRY).
 Automatic OpenTelemetry instrumentation injection into the application pod, to be used for distributed tracing, metrics, and telemetry collection. Prometheus enabled scraping for the pods of this deployment:
 ![65_open_telemetry_enabled_deployment](images/65_open_telemetry_enabled_deployment.png)
@@ -516,3 +516,29 @@ Amazon Prometheus workspace provisioned as part of the terraform OpenTelemetry f
 
 Amazon Grafana workspace:
 ![64_amazon_grafana](images/64_amazon_grafana.png)
+
+#### ADOT Traces
+Traces collection to AWS XRay, is specified in the 01_adot_collector_traces.yaml k8s manifest.
+Among other specs, special attention to:
+ - Memory limiter to prevent OOM
+ - Filter out health check traces to prevent excessive and unecessary traces
+ - Kubernetes attributes - CRITICAL for trace correlation (Identify the origin of the trace)
+ - Batch processor, send traces in batches to xray to avoid excessive http call.        
+    - timeout: 10s - If number of traces do not reach 50 in 10s, send what is there
+    - send_batch_size: 50 - 
+
+02_adot_instrumentation_traces.yaml specify how the traces are sent from the pod to xray.
+
+After manually apply the 01_adot_collector_traces.yaml and 02_adot_instrumentation_traces.yaml, the adot collector start sendind tracing:
+Manually apply and check pods, opentelemetrycollector, and show collector logs:
+![66_manually_apply_adot_collector](images/66_manually_apply_adot_collector.png)
+
+The traces been sent:
+![69_logs_traces](images/69_logs_traces.png)
+
+CloudWatch Traces on the console:
+Tracemap:
+![67_tracemap](images/67_tracemap.png)
+
+Segments Timeline
+![68_trace_detailed](images/68_trace_detailed.png)
