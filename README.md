@@ -517,7 +517,7 @@ Amazon Prometheus workspace provisioned as part of the terraform OpenTelemetry f
 Amazon Grafana workspace:
 ![64_amazon_grafana](images/64_amazon_grafana.png)
 
-#### ADOT Traces
+#### ADOT Traces collector
 Traces collection to AWS XRay, is specified in the 01_adot_collector_traces.yaml k8s manifest.
 Among other specs, special attention to:
  - Memory limiter to prevent OOM
@@ -542,3 +542,15 @@ Tracemap:
 
 Segments Timeline
 ![68_trace_detailed](images/68_trace_detailed.png)
+
+
+#### ADOT Logs collector
+Pod logs sent to CloudWatch specified in the K8s manifest 01_adot_collector_logs.yaml. 
+The mode: daemonset is what determines that the logs will be pod wise.
+Log collector manyfest apply, pods check and logs of the logs been send:
+![70_log_collector_logs](images/70_log_collector_logs.png)
+
+The logs received at CloudWatch:
+![71_cloudwatch_logs](images/71_cloudwatch_logs.png)
+![72_cloudwatch_logs_detail](images/72_cloudwatch_logs_detail.png)
+
