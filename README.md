@@ -1,6 +1,6 @@
 # Retail Store Microservices Production Deployment
 
-The objective of this project is to externalise how I have been deploying production applications on my clients. I a production-grade cloud-native retail platform deployed on AWS using Terraform-based Infrastructure as Code (IaC) with remote state management in Amazon S3. The platform is designed for high availability, scalability, security, and fully automated continuous delivery.
+The objective of this project is to externalise how I have been deploying production applications on my clients. It is a production-grade cloud-native retail platform deployed on AWS using Terraform-based Infrastructure as Code (IaC) with remote state management in Amazon S3. The platform is designed for high availability, scalability, security, and fully automated continuous delivery.
 
 <table>
   <tr>
@@ -554,3 +554,6 @@ The logs received at CloudWatch:
 ![71_cloudwatch_logs](images/71_cloudwatch_logs.png)
 ![72_cloudwatch_logs_detail](images/72_cloudwatch_logs_detail.png)
 
+#### ADOT Metrics collector
+K8s manifest: 01_adot_collector_prometheus_full_k8s_cluster.yaml.
+Inside of, update the endpoint with the Amazon Prometheus Workspace ID, then apply.
