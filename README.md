@@ -26,7 +26,7 @@ The objective of this project is to externalise how I have been deploying produc
       </ul>
     </td>
     <td>
-      <b>Dataplane Services</b>
+      <b>Database Services</b>
       <ul>
         <li>Amazon RDS MySQL</li>
         <li>Amazon RDS PostgreSQL</li>
@@ -88,7 +88,7 @@ It will run terraform apply and provision provision:
  - Create AWS ECR ready for CI pipeline to run form retail_microservices repository
  - Install ArgoCD 
 
-After full provisioning, the admin must manually locate the database connection URLs in the terraform output of the dataplane provisioning:
+After full provisioning, the admin must manually locate the database connection URLs in the terraform output of the database provisioning:
 ![EKS Cluster - Dataplane Terraform output](images/38_Dataplane_terraform_output.png)
 
 Copy the kubectl port-forward svc/argocd-server -n argocd 8080:443 command from the create cluster sctipt output and run to open the ArgoCD UI, and CLI, login as instructed, it will be used in the CD section.
@@ -244,7 +244,7 @@ EKS Cluster - IAM Roles
 EKS Cluster - IAM Policies
 ![EKS Cluster - IAM Policies](images/22_EKS_Console_IAM_Policies.png)
 
-EKS Cluster - Dataplane Terraform output
+EKS Cluster - Database Terraform output
 ![EKS Cluster - Dataplane Terraform output](images/25_EKS_Dataplane_output.png)
 
 EKS Cluster - RDS MySQL and PostgreSQL for Catalog and Orders microservices
@@ -345,7 +345,7 @@ EKS Cluster - AWS Secret Manager, storing the database credentials for RDS MySQL
 | `c8_02_amg_grafana_iam_role.tf` | Creates the IAM Role assumed by Amazon Managed Grafana. Attaches Prometheus, SNS, and X-Ray access policies. Enables Grafana workspace integration with AWS observability services. |
 | `c8_03_amg_grafana.tf` | Deploys an Amazon Managed Grafana workspace integrated with AWS SSO. Configures Prometheus, CloudWatch, and X-Ray as monitoring data sources. Provides centralized dashboards, alerting, and observability visualization for the EKS platform. |
 
-##### AWS Managed Dataplane Terraform
+##### AWS Managed Database Terraform
 | File | Description |
 |------|-------------|
 | `c1_versions.tf` | Pins Terraform CLI and provider versions (AWS, Kubernetes, Helm, HTTP) to ensure deterministic IaC execution across environments. Configures remote state backend in Amazon S3 with encryption and state locking to guarantee consistent multi-user Terraform state management. |
