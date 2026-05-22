@@ -3,28 +3,18 @@ data "aws_vpc" "default" {
   default = true
 }
 
-# Get Default Security Group
-data "aws_security_group" "default" {
-  vpc_id = data.aws_vpc.default.id
-
-  filter {
-    name   = "group-name"
-    values = ["default"]
-  }
-}
-
-# Get latest Amazon Linux 2023 AMI
-data "aws_ami" "amazon_linux" {
+# Get latest Ubuntu 20.04 LTS AMI
+data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["amazon"]
+  owners      = ["099720109477"]
 
   filter {
     name   = "name"
-    values = ["al2023-ami-2023.*-x86_64"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
 }
 
-# Get ALL default subnets and pick the first one (most reliable method)
+# Get public subnets
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
@@ -46,12 +36,12 @@ data "aws_subnets" "default" {
 resource "aws_instance" "ec2" {
   count = var.instance_count
 
-  ami           = data.aws_ami.amazon_linux.id
+  ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
   key_name      = var.key_name
 
-  subnet_id                   = data.aws_subnets.default.ids[0]   # Pick first available subnet
-  vpc_security_group_ids      = [data.aws_security_group.default.id]
+  subnet_id                   = data.aws_subnets.default.ids[0]
+  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]   # ← Using new SG
   associate_public_ip_address = true
 
   tags = {
