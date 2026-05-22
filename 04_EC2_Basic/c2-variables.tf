@@ -4,12 +4,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "instance_count" {
-  description = "Number of EC2 instances to create"
-  type        = number
-  default     = 2
-}
-
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
@@ -21,8 +15,14 @@ variable "key_name" {
   type        = string
 }
 
-variable "instance_name_prefix" {
-  description = "Prefix for instance names"
-  type        = string
-  default     = "dercio-ec2"
+variable "root_volume_size" {
+  description = "Root volume size in GB"
+  type        = number
+  default     = 50
+}
+
+variable "instance_names" {
+  description = "Names for the EC2 instances"
+  type        = list(string)
+  default     = ["Control_plane", "Worker_node"]
 }

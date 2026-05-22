@@ -32,19 +32,26 @@ data "aws_subnets" "default" {
   }
 }
 
-# Create EC2 Instances
+# Security Group (already created in c5-security-group.tf)
+# Create EC2 Instances with custom names and 50GB storage
 resource "aws_instance" "ec2" {
-  count = var.instance_count
+  count = length(var.instance_names)
 
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.instance_type
   key_name      = var.key_name
 
   subnet_id                   = data.aws_subnets.default.ids[0]
-  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]   # ← Using new SG
+  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
   associate_public_ip_address = true
 
+  root_block_device {
+    volume_size           = var.root_volume_size
+    volume_type           = "gp3"
+    delete_on_termination = true
+  }
+
   tags = {
-    Name = "${var.instance_name_prefix}-${count.index + 1}"
+    Name = var.instance_names[count.index]
   }
 }

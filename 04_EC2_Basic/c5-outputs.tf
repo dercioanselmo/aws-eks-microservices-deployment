@@ -9,7 +9,7 @@ output "instance_public_ips" {
 output "ssh_commands" {
   description = "Ready-to-use SSH commands"
   value = [
-    for i in range(var.instance_count) :
-    "ssh -i ~/.ssh/dercio-key.pem ubuntu@${aws_instance.ec2[i].public_ip}"
+    for i in range(length(var.instance_names)) :
+    "ssh -i ~/.ssh/dercio-key.pem ubuntu@${aws_instance.ec2[i].public_ip}   # ${var.instance_names[i]}"
   ]
 }
