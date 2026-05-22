@@ -1,0 +1,49 @@
+---
+- name: Common Kubernetes Node Setup (Both Control Plane & Worker)
+  hosts: k8s_cluster
+  become: yes
+  tasks:
+
+    - name: Update and upgrade packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+        autoremove: yes
+
+    - name: Disable swap immediately
+      command: swapoff -a
+
+    - name: Disable swap permanently
+      replace:
+        path: /etc/fstab
+        regexp: '^(\s*[^#].*?\s+swap\s+.*)$'
+        replace: '# \1'
+
+    - name: Install prerequisites
+      apt:
+        name:
+          - curl
+          - gnupg2
+          - software-properties-common
+          - apt-transport-https
+          - ca-certificates
+        state: present
+
+    - name: Install containerd
+      apt:
+        name: containerd.io
+        state: present
+        update_cache: yes
+
+    - name: Configure containerd for systemd cgroup
+      template:
+        src: containerd-config.toml.j2
+        dest: /etc/containerd/config.toml
+      notify: Restart containerd
+
+  handlers:
+    - name: Restart containerd
+      systemd:
+        name: containerd
+        state: restarted
+        enabled: yes

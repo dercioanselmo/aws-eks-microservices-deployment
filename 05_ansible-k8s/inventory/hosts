@@ -1,0 +1,14 @@
+[control_plane]
+control-plane ansible_host=54.242.0.0
+
+[worker]
+worker-node ansible_host=54.91.100.124
+
+[k8s_cluster:children]
+control_plane
+worker
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/Users/apple/Downloads/dercio-key.pem
+ansible_python_interpreter=/usr/bin/python3
