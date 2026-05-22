@@ -3,19 +3,6 @@ data "aws_vpc" "default" {
   default = true
 }
 
-# Get a public subnet from default VPC
-data "aws_subnet" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-
-  filter {
-    name   = "default-for-az"
-    values = ["true"]
-  }
-}
-
 # Get Default Security Group
 data "aws_security_group" "default" {
   vpc_id = data.aws_vpc.default.id
@@ -37,6 +24,24 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
+# Get ALL default subnets and pick the first one (most reliable method)
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+
+  filter {
+    name   = "default-for-az"
+    values = ["true"]
+  }
+
+  filter {
+    name   = "map-public-ip-on-launch"
+    values = ["true"]
+  }
+}
+
 # Create EC2 Instances
 resource "aws_instance" "ec2" {
   count = var.instance_count
@@ -45,8 +50,9 @@ resource "aws_instance" "ec2" {
   instance_type = var.instance_type
   key_name      = var.key_name
 
-  subnet_id              = data.aws_subnet.default.id
-  vpc_security_group_ids = [data.aws_security_group.default.id]
+  subnet_id                   = data.aws_subnets.default.ids[0]   # Pick first available subnet
+  vpc_security_group_ids      = [data.aws_security_group.default.id]
+  associate_public_ip_address = true
 
   tags = {
     Name = "${var.instance_name_prefix}-${count.index + 1}"
