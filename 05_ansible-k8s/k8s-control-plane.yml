@@ -4,10 +4,11 @@
   become: yes
   tasks:
 
-    - name: Add Kubernetes apt repository key
-      apt_key:
-        url: https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key
-        state: present
+    - name: Add Kubernetes apt keyring
+      shell: |
+        curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      args:
+        creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
     - name: Add Kubernetes repository
       apt_repository:
@@ -34,7 +35,7 @@
         - kubectl
 
     - name: Initialize Kubernetes cluster
-      shell: |
+      command: |
         kubeadm init \
           --pod-network-cidr=10.244.0.0/16 \
           --kubernetes-version=1.29.0 \

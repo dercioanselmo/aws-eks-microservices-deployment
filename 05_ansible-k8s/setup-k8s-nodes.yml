@@ -12,6 +12,7 @@
 
     - name: Disable swap immediately
       command: swapoff -a
+      changed_when: false
 
     - name: Disable swap permanently
       replace:
@@ -28,20 +29,21 @@
           - apt-transport-https
           - ca-certificates
         state: present
+        update_cache: yes
 
     - name: Install containerd
       apt:
         name: containerd.io
         state: present
-        update_cache: yes
 
-    - name: Configure containerd for systemd cgroup
-      template:
-        src: containerd-config.toml.j2
-        dest: /etc/containerd/config.toml
-      notify: Restart containerd
+    - name: Configure containerd to use systemd cgroup driver
+      shell: |
+        mkdir -p /etc/containerd
+        containerd config default > /etc/containerd/config.toml
+        sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
+      args:
+        creates: /etc/containerd/config.toml
 
-  handlers:
     - name: Restart containerd
       systemd:
         name: containerd
