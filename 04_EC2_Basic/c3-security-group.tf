@@ -1,37 +1,9 @@
-# Security Group for Kubernetes Cluster
+# Existing Security Group
 resource "aws_security_group" "ec2_sg" {
-  name        = "dercio-k8s-cluster-sg"
-  description = "Security Group for Kubernetes Cluster"
+  name        = "dercio-ec2-ssh"
+  description = "Allow SSH inbound traffic"
   vpc_id      = data.aws_vpc.default.id
 
-  # SSH Access (from anywhere - you can restrict later)
-  ingress {
-    description = "SSH from anywhere"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Kubernetes API Server (6443) - Only from within the VPC
-  ingress {
-    description = "Kubernetes API Server (Control Plane)"
-    from_port   = 6443
-    to_port     = 6443
-    protocol    = "tcp"
-    cidr_blocks = [data.aws_vpc.default.cidr_block]   # Only VPC internal
-  }
-
-  # Allow all internal communication within the VPC (recommended for K8s)
-  ingress {
-    description = "Allow all traffic from VPC"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [data.aws_vpc.default.cidr_block]
-  }
-
-  # Egress - Allow all outbound
   egress {
     from_port   = 0
     to_port     = 0
@@ -40,6 +12,30 @@ resource "aws_security_group" "ec2_sg" {
   }
 
   tags = {
-    Name = "dercio-k8s-sg"
+    Name = "dercio-ec2-sg"
   }
+}
+
+# Existing SSH Rule
+resource "aws_vpc_security_group_ingress_rule" "ssh" {
+  security_group_id = aws_security_group.ec2_sg.id
+
+  description = "SSH from anywhere"
+
+  from_port   = 22
+  to_port     = 22
+  ip_protocol = "tcp"
+  cidr_ipv4   = "0.0.0.0/0"
+}
+
+# New Kubernetes API Rule
+resource "aws_vpc_security_group_ingress_rule" "k8s_api" {
+  security_group_id = aws_security_group.ec2_sg.id
+
+  description = "Kubernetes API Server (6443)"
+
+  from_port   = 6443
+  to_port     = 6443
+  ip_protocol = "tcp"
+  cidr_ipv4   = data.aws_vpc.default.cidr_block
 }
