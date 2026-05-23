@@ -95,3 +95,13 @@ resource "aws_vpc_security_group_ingress_rule" "calico_typha" {
   ip_protocol       = "tcp"
   cidr_ipv4         = data.aws_vpc.default.cidr_block
 }
+
+# My Mac access
+resource "aws_vpc_security_group_ingress_rule" "k8s_api_external" {
+  security_group_id = aws_security_group.ec2_sg.id
+  description       = "Kubernetes API Server (6443) - admin access"
+  from_port         = 6443
+  to_port           = 6443
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "87.201.143.73/32"
+}
