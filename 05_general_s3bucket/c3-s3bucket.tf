@@ -1,21 +1,19 @@
-# Standard S3 Resources
 resource "random_string" "suffix" {
   length  = 6
   upper   = false
   special = false
 }
 
-resource "aws_s3_bucket" "tfstate_bucket" {
-  bucket = "tfstate-${var.environment_name}-${var.aws_region}-${random_string.suffix.result}"
-  #force_destroy = true
+resource "aws_s3_bucket" "s3_bucket" {
+  bucket = "general-purpose-bucket-${var.aws_region}-${random_string.suffix.result}"
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
   tags = {
-    Name        = "tfstate-${var.environment_name}-${var.aws_region}"
+    Name        = "general-purpose-bucket-${var.aws_region}"
     Environment = var.environment_name
-    Project     = "remote-backend-for-devops"
-    Purpose     = "terraform-backend"
+    Project     = "General Purpose S3 bucket"
+    Purpose     = "general"
   }
 }
 
@@ -42,3 +40,4 @@ resource "aws_s3_bucket_public_access_block" "tfstate_block_public" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+

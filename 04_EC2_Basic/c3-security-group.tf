@@ -103,5 +103,5 @@ resource "aws_vpc_security_group_ingress_rule" "k8s_api_external" {
   from_port         = 6443
   to_port           = 6443
   ip_protocol       = "tcp"
-  cidr_ipv4         = "87.201.143.73/32"
+  cidr_ipv4         = "94.203.95.31/32"
 }
