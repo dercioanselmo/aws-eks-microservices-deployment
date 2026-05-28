@@ -1,11 +1,9 @@
-
-output "bucket_arn" {
-  description = "ARN of the bucket"
-  value       = aws_s3_bucket.s3_bucket.arn
+output "resume_bucket_name" {
+    description = "Bucket Name"
+  value = aws_s3_bucket.resume_bucket.id
 }
 
-output "tfstate_bucket_id" {
-  description = "Bucket ID (same as name)"
-  value       = aws_s3_bucket.s3_bucket.id
+output "resume_bucket_arn" {
+    description = "Bucket ARN"
+  value = aws_s3_bucket.resume_bucket.arn
 }
-
