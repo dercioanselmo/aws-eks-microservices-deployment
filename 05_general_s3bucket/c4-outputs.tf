@@ -1,9 +1,9 @@
 output "resume_bucket_name" {
-    description = "Bucket Name"
-  value = aws_s3_bucket.resume_bucket.id
+  description = "Bucket Name"
+  value       = module.resume_bucket.bucket_name
 }
 
 output "resume_bucket_arn" {
-    description = "Bucket ARN"
-  value = aws_s3_bucket.resume_bucket.arn
+  description = "Bucket ARN"
+  value       = module.resume_bucket.bucket_arn
 }
