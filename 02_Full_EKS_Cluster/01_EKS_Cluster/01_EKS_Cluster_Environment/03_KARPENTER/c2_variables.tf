@@ -10,7 +10,7 @@ variable "aws_region" {
 variable "aws_region_remote_state" {
   description = "AWS region to deploy resources"
   type        = string
-  default     = "eu-central-1"
+  default     = "us-east-1"
 }
 
 # --------------------------------------------------------
