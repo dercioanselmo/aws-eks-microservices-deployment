@@ -23,7 +23,7 @@ variable "mount_point" {
 }
 
 variable "subnet_ids" {
-  description = "Subnet IDs where the EFS mount targets will be created"
+  description = "Optional override for subnet IDs where the EFS mount targets will be created"
   type        = list(string)
   default     = []
 }
