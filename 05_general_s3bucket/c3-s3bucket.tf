@@ -4,10 +4,3 @@ module "resume_bucket" {
   bucket_name_prefix = var.bucket_name_prefix
   environment_name   = var.environment_name
 }
-
-module "report_bucket" {
-  source = "./modules/s3_bucket"
-
-  bucket_name_prefix = "zomato-demo-project-report"
-  environment_name   = var.environment_name
-}

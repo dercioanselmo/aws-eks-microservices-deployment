@@ -13,5 +13,5 @@ variable "aws_region" {
 variable "bucket_name_prefix" {
   description = "Prefix used for the default bucket"
   type        = string
-  default     = "resume-storage"
+  default     = "zomato-demo-project-report"
 }

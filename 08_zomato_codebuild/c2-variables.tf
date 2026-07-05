@@ -25,7 +25,7 @@ variable "github_repo" {
 variable "buildspec_path" {
   description = "Path to the buildspec file to use for the build"
   type        = string
-  default     = "buildspec.yaml"
+  default     = "AWS-DevSecops-Codepipeline-Project-ECS-main/buildspec.yaml"
 }
 
 variable "code_connection_arn" {

@@ -8,7 +8,7 @@ terraform {
   }
   # Remote Backend
   backend "s3" {
-    bucket = "tfstate-dev-eu-central-1-a65beq"
+    bucket = "tfstate-dev-us-east-1-1v8wcs"
     key = "vpc/dev/terraform.tfstate"
     region = "eu-central-1" # HArdcoded Variable because values from variables is still not allowed in the terraform block. 
     encrypt = true

@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket       = "tfstate-dev-eu-central-1-a65beq"
+    bucket       = "tfstate-dev-us-east-1-1v8wcs"
     key          = "zomato/efs/terraform.tfstate"
     region       = "eu-central-1"
     encrypt      = true

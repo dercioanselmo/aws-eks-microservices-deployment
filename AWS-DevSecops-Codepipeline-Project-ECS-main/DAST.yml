@@ -5,7 +5,7 @@ env:
     # ZAP download  details
     ZAP_VERSION: "2.17.0"
     ZAP_PROXY_URL: "https://github.com/zaproxy/zaproxy/releases/download/v2.17.0/ZAP_2.17.0_Linux.tar.gz"
-    SCANNING_URL: "https://dercio.anselmo.xyz/"
+    SCANNING_URL: "https://dercio.anselmo.com/"
     S3_BUCKET_NAME: "zomato-demo-project-report-fu9j7r" 
 
     # EFS (used ONLY for ZAP install + data cache + ZAP home, NOT for reports)

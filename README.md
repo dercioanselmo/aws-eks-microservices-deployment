@@ -133,8 +133,8 @@ Execute the terraform init, validate, plan, and apply -auto-approve. Wait for th
 
 ```bach
 apple@apples-MacBook-Pro 01_remote_backend_s3bucket % terraform output                                                 
-tfstate_bucket_arn = "arn:aws:s3:::tfstate-dev-eu-central-1-a65beq"
-tfstate_bucket_id = "tfstate-dev-eu-central-1-a65beq"
+tfstate_bucket_arn = "arn:aws:s3:::tfstate-dev-us-east-1-1v8wcs"
+tfstate_bucket_id = "tfstate-dev-us-east-1-1v8wcs"
 ```
 
 ### VPC
