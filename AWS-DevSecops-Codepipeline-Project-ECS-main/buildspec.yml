@@ -8,9 +8,10 @@ env:
     Project: dev/sonar:Project
 
   variables:
-    SONAR_SCANNER_URL: "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.0.1.6346-linux-x64.zip"
-    TRIVY_URL: "https://github.com/aquasecurity/trivy/releases/download/v0.68.2/trivy_0.68.2_Linux-64bit.tar.gz"
-    DEP_CHECK_URL: "https://github.com/dependency-check/DependencyCheck/releases/download/v12.1.9/dependency-check-12.1.9-release.zip"
+    SONAR_SCANNER_URL: "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.1.0.6389-linux-x64.zip"
+    TRIVY_URL: "https://github.com/aquasecurity/trivy/releases/download/v0.72.0/trivy_0.72.0_Linux-64bit.tar.gz"
+    DEP_CHECK_URL: "https://github.com/dependency-check/DependencyCheck/releases/download/v12.2.2/dependency-check-12.2.2-release.zip"
+    
     S3_BUCKET_NAME: "zomato-demo-project-report-fu9j7r"
     IMAGE_REPO_NAME: "zomato"
     IMAGE_TAG: ""
@@ -19,7 +20,7 @@ env:
     TRIVY_FAIL_IMAGE: "false"
 
     # EFS... (used only for Dependency-Check DATA cache)
-    EFS_MOUNT_TARGET: "fs-0e025854beaec202a.efs.ap-south-1.amazonaws.com:/" # replace with your EFS mount target
+    EFS_MOUNT_TARGET: "fs-0bc8d4a677ea35892.efs.us-east-1.amazonaws.com:/" 
     EFS_MOUNT_DIR: "/efs"
     DP_CHECK_DATA_DIR: "/efs/dependency-check-data"
     SONAR_USER_HOME: "/efs/sonar-cache"

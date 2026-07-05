@@ -43,19 +43,19 @@ variable "service_role_name" {
 variable "artifact_bucket_name" {
   description = "S3 bucket used for CodeBuild artifacts"
   type        = string
-  default     = "zomato-demo-project-report-fu9j7r"
+  default     = ""
 }
 
 variable "vpc_id" {
   description = "VPC ID for the build environment"
   type        = string
-  default     = "vpc-0bca1e48932d7bcd7"
+  default     = ""
 }
 
 variable "private_subnet_ids" {
   description = "Private subnet IDs for the build environment"
   type        = list(string)
-  default     = ["subnet-0d6cae1497ec44de0", "subnet-061b4578380da2d40"]
+  default     = []
 }
 
 variable "security_group_id" {
@@ -73,7 +73,7 @@ variable "efs_identifier" {
 variable "efs_dns_name" {
   description = "DNS name of the EFS file system"
   type        = string
-  default     = "fs-0bc8d4a677ea35892.efs.us-east-1.amazonaws.com"
+  default     = ""
 }
 
 variable "efs_mount_point" {
