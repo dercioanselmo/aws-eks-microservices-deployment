@@ -19,7 +19,7 @@ variable "github_owner" {
 variable "github_repo" {
   description = "GitHub repository name"
   type        = string
-  default     = ""
+  default     = "aws-eks-microservices-deployment"
 }
 
 variable "buildspec_path" {
@@ -43,19 +43,19 @@ variable "service_role_name" {
 variable "artifact_bucket_name" {
   description = "S3 bucket used for CodeBuild artifacts"
   type        = string
-  default     = ""
+  default     = "zomato-demo-project-report-fu9j7r"
 }
 
 variable "vpc_id" {
   description = "VPC ID for the build environment"
   type        = string
-  default     = ""
+  default     = "vpc-0bca1e48932d7bcd7"
 }
 
 variable "private_subnet_ids" {
   description = "Private subnet IDs for the build environment"
   type        = list(string)
-  default     = []
+  default     = ["subnet-0d6cae1497ec44de0", "subnet-061b4578380da2d40"]
 }
 
 variable "security_group_id" {
@@ -73,7 +73,7 @@ variable "efs_identifier" {
 variable "efs_dns_name" {
   description = "DNS name of the EFS file system"
   type        = string
-  default     = ""
+  default     = "fs-0bc8d4a677ea35892.efs.us-east-1.amazonaws.com"
 }
 
 variable "efs_mount_point" {

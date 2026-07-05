@@ -31,7 +31,16 @@ resource "aws_iam_role_policy" "codebuild" {
           "codebuild:CreateReport",
           "codebuild:UpdateReport",
           "codebuild:BatchPutTestCases",
-          "codebuild:BatchPutCodeCoverages"
+          "codebuild:BatchPutCodeCoverages",
+          "s3:PutObject",
+          "s3:GetBucketLocation",
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeDhcpOptions",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeVpcs"
         ]
         Resource = "*"
       }
@@ -47,7 +56,7 @@ resource "aws_codebuild_project" "this" {
 
   artifacts {
     type = "S3"
-    location = var.artifact_bucket_name
+    location = local.resolved_artifact_bucket_name
     name = var.project_name
     namespace_type = "BUILD_ID"
     packaging = "ZIP"
@@ -82,15 +91,15 @@ resource "aws_codebuild_project" "this" {
   source_version = "main"
 
   vpc_config {
-    vpc_id             = var.vpc_id
-    subnets            = var.private_subnet_ids
-    security_group_ids = [var.security_group_id]
+    vpc_id             = local.resolved_vpc_id
+    subnets            = local.resolved_private_subnet_ids
+    security_group_ids = [local.resolved_security_group_id]
   }
 
   file_system_locations {
-    identifier = var.efs_identifier
-    location   = var.efs_dns_name
-    type       = "EFS"
+    identifier  = var.efs_identifier
+    location    = "${local.resolved_efs_dns_name}:/"
+    type        = "EFS"
     mount_point = var.efs_mount_point
   }
 
