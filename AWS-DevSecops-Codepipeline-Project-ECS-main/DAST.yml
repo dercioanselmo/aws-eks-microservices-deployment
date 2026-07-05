@@ -1,0 +1,145 @@
+version: 0.2
+
+env:
+  variables:
+    # ZAP download  details
+    ZAP_VERSION: "2.17.0"
+    ZAP_PROXY_URL: "https://github.com/zaproxy/zaproxy/releases/download/v2.17.0/ZAP_2.17.0_Linux.tar.gz"
+    SCANNING_URL: "https://dercio.anselmo.xyz/"
+    S3_BUCKET_NAME: "zomato-demo-project-report-fu9j7r" 
+
+    # EFS (used ONLY for ZAP install + data cache + ZAP home, NOT for reports)
+    EFS_MOUNT_TARGET: "fs-0e025854beaec202a.efs.ap-south-1.amazonaws.com:/"
+    EFS_MOUNT_DIR: "/efs"
+    ZAP_INSTALL_BASE_DIR: "/efs/zap-proxy"
+
+    # ZAP home directory on EFS (replaces /root/.ZAP)
+    ZAP_HOME: "/efs/zap-proxy/home"
+
+    EFS_MOUNT_OPTIONS: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport"
+    RUN_DP_CHECK: "true"
+    FAIL_ON_EFS_MOUNT: "false"
+    FALLBACK_MANUAL_MOUNT: "false"
+    MANUAL_MOUNT_MAX_RETRIES: "6"
+
+phases:
+  install:
+    commands:
+      - echo "===== install phase ====="
+      - aws --version || true
+
+  pre_build:
+    commands:
+      - echo "===== pre_build phase ====="
+      - |
+        if command -v apt-get >/dev/null 2>&1; then
+          apt-get update -y
+          apt-get install -y jq curl unzip wget openjdk-17-jre nfs-common amazon-efs-utils python3 || true
+        elif command -v yum >/dev/null 2>&1; then
+          yum install -y jq curl unzip wget java-17-openjdk docker nfs-utils amazon-efs-utils python3 || true
+        else
+          echo "Ensure Java 17+, Python3, unzip, curl, wget, docker, and nfs client (amazon-efs-utils) are installed"
+        fi
+
+      # Local report directory (NOT on EFS)
+      - mkdir -p "$(pwd)/zap-report" || true
+
+      # EFS directories (for ZAP install/cache + ZAP home)
+      - mkdir -p "$EFS_MOUNT_DIR" "$ZAP_INSTALL_BASE_DIR" "$ZAP_HOME" || true
+
+      # TODO: mount EFS here (your existing EFS mounting code)
+      # Example (if using amazon-efs-utils):
+      # - |
+      #   echo "Mounting EFS..."
+      #   mount -t efs -o "${EFS_MOUNT_OPTIONS}" "${EFS_MOUNT_TARGET}" "${EFS_MOUNT_DIR}"
+
+      - |
+        echo "===== Preparing ZAP on EFS (binaries/cache only) ====="
+        ZAP_TAR_NAME="ZAP_${ZAP_VERSION}_Linux.tar.gz"
+        ZAP_TAR_PATH="${ZAP_INSTALL_BASE_DIR}/${ZAP_TAR_NAME}"
+        ZAP_INSTALL_DIR="${ZAP_INSTALL_BASE_DIR}/ZAP_${ZAP_VERSION}"
+
+        # 1) If ZAP already extracted on EFS, just reuse it
+        if [ -x "${ZAP_INSTALL_DIR}/zap.sh" ]; then
+          echo "ZAP already extracted at ${ZAP_INSTALL_DIR}, skipping download."
+        else
+          # 2) If tarball already cached on EFS, reuse it
+          if [ -f "${ZAP_TAR_PATH}" ]; then
+            echo "Found existing ZAP tarball in EFS: ${ZAP_TAR_PATH}"
+          else
+            echo "ZAP tarball not found in EFS, downloading..."
+            curl -sSL "${ZAP_PROXY_URL}" -o "${ZAP_TAR_PATH}"
+          fi
+
+          echo "Extracting ZAP tarball into ${ZAP_INSTALL_BASE_DIR}..."
+          tar -xzf "${ZAP_TAR_PATH}" -C "${ZAP_INSTALL_BASE_DIR}"
+        fi
+
+        echo "ZAP is ready under: ${ZAP_INSTALL_DIR}"
+        echo "ZAP home directory (on EFS): ${ZAP_HOME}"
+
+  build:
+    commands:
+      - echo "===== build (ZAP Baseline Scan) phase ====="
+      - TARGET_URL="${SCANNING_URL}"
+      - ZAP_INSTALL_DIR="${ZAP_INSTALL_BASE_DIR}/ZAP_${ZAP_VERSION}"
+
+      # Local report directory (workspace)
+      - REPORT_DIR="$(pwd)/zap-report"
+      - mkdir -p "${REPORT_DIR}"
+
+      # Define report paths (LOCAL, not on EFS)
+      - REPORT_HTML="${REPORT_DIR}/zap_baseline.html"
+      - REPORT_JSON="${REPORT_DIR}/zap_baseline.json"
+
+      - echo "Running ZAP Baseline scan against ${TARGET_URL}"
+
+      # HTML report
+      - |
+        echo "Starting ZAP HTML scan..."
+        "${ZAP_INSTALL_DIR}/zap.sh" -cmd \
+          -dir "${ZAP_HOME}" \
+          -quickurl "${TARGET_URL}" \
+          -quickprogress \
+          -quickout "${REPORT_HTML}"
+        HTML_EXIT_CODE=$?
+        echo "ZAP HTML scan exit code: ${HTML_EXIT_CODE}"
+
+      # JSON report (no -format, ZAP uses .json extension)
+      - |
+        echo "Starting ZAP JSON scan..."
+        "${ZAP_INSTALL_DIR}/zap.sh" -cmd \
+          -dir "${ZAP_HOME}" \
+          -quickurl "${TARGET_URL}" \
+          -quickprogress \
+          -quickout "${REPORT_JSON}"
+        JSON_EXIT_CODE=$?
+        echo "ZAP JSON scan exit code: ${JSON_EXIT_CODE}"
+
+      # Verify reports were created
+      - echo "Checking if reports were created..."
+      - ls -la "${REPORT_DIR}" || true
+      - ls -la "$(pwd)/" || true
+
+      # Create a small debug file only if no reports were generated
+      - |
+        if [ ! -f "${REPORT_HTML}" ] && [ ! -f "${REPORT_JSON}" ]; then
+          echo "No reports found. Creating debug file..."
+          {
+            echo "ZAP scan completed but no reports generated"
+          } > "${REPORT_DIR}/debug.txt"
+        fi
+
+      - echo "Build phase completed"
+
+      # Upload reports to S3 using CodePipeline execution ID
+      - echo "===== Uploading reports to S3 ====="
+      - |
+        echo "Pipeline execution: ${PIPELINE_EXECUTION_ID}"
+      - aws s3 cp "${REPORT_DIR}/" "s3://${S3_BUCKET_NAME}/${PIPELINE_EXECUTION_ID}/" --recursive
+
+artifacts:
+  files:
+    - "**/*"
+  base-directory: zap-report
+  discard-paths: no

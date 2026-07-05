@@ -1,5 +1,5 @@
 resource "aws_iam_role" "codebuild" {
-  name = "${var.project_name}-role"
+  name = var.service_role_name
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -46,15 +46,25 @@ resource "aws_codebuild_project" "this" {
   service_role  = aws_iam_role.codebuild.arn
 
   artifacts {
-    type = "NO_ARTIFACTS"
+    type = "S3"
+    location = var.artifact_bucket_name
+    name = var.project_name
+    namespace_type = "BUILD_ID"
+    packaging = "ZIP"
+    encryption_disabled = false
   }
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/amazonlinux2-x86_64-standard:5.0"
+    image                       = "aws/codebuild/standard:7.0"
     type                        = "LINUX_CONTAINER"
     privileged_mode             = true
     image_pull_credentials_type = "CODEBUILD"
+
+    environment_variable {
+      name  = "EFS_MOUNT_POINT"
+      value = var.efs_mount_point
+    }
   }
 
   source {
@@ -65,9 +75,24 @@ resource "aws_codebuild_project" "this" {
     git_submodules_config {
       fetch_submodules = false
     }
+
+    buildspec = var.buildspec_path
   }
 
   source_version = "main"
+
+  vpc_config {
+    vpc_id             = var.vpc_id
+    subnets            = var.private_subnet_ids
+    security_group_ids = [var.security_group_id]
+  }
+
+  file_system_locations {
+    identifier = var.efs_identifier
+    location   = var.efs_dns_name
+    type       = "EFS"
+    mount_point = var.efs_mount_point
+  }
 
   logs_config {
     cloudwatch_logs {
