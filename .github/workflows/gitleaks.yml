@@ -1,0 +1,24 @@
+name: "GitLeaks Terraform Secret Scan"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '04_EC2_Basic/**'
+  pull_request:
+    paths:
+      - '04_EC2_Basic/**'
+
+jobs:
+  gitleaks:
+    name: "Run GitLeaks on Terraform changes"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run GitLeaks
+        uses: zricethezav/gitleaks-action@v1
+        with:
+          args: '--path=04_EC2_Basic --verbose'
