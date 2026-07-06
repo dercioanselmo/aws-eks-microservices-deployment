@@ -518,6 +518,10 @@ Amazon Grafana workspace:
 ![64_amazon_grafana](images/64_amazon_grafana.png)
 
 #### ADOT Traces collector
+
+---
+
+
 Traces collection to AWS XRay, is specified in the 01_adot_collector_traces.yaml k8s manifest.
 Among other specs, special attention to:
  - Memory limiter to prevent OOM
@@ -557,3 +561,44 @@ The logs received at CloudWatch:
 #### ADOT Metrics collector
 K8s manifest: 01_adot_collector_prometheus_full_k8s_cluster.yaml.
 Inside of, update the endpoint with the Amazon Prometheus Workspace ID, then apply.
+
+---
+
+## Terraform CICD using Github Action.
+A new GitHub Actions workflow was added for the `04_EC2_Basic` Terraform project to provision EC2 resources with a manual approval gate and to destroy them safely with a second approval flow.
+
+This workflow demonstrates a complete CICD path for infrastructure changes:
+- `terraform plan` runs automatically on every `main` push.
+- `terraform apply` is gated by the `04-EC2-Basic-Apply` environment and requires manual reviewer approval.
+- `terraform destroy` is also executed through GitHub Actions with explicit confirmation and the same approval gate.
+
+#### Create EC2 with manual approval
+The following screenshots show the create pipeline running, waiting for user approval, and completing after approval.
+
+![Terraform CICD Creating EC2](images/73_Terraform_CICD_CreatingEC2.png)
+
+![Terraform CICD waiting for user approval](images/74_Terraform_CICD_CreatingEC2-watingUser-Aproval.png)
+
+![GitHub app notification for approval](images/75_Github_app_notification_for _approval.jpeg)
+
+![GitHub app manual approval](images/76_Github_app_Manual_Aproval.jpeg)
+
+![Terraform CICD after manual approval](images/77_Terraform_CICD_CreatingEC2-After_manual-aproval.png)
+
+![Terraform CICD pipeline complete after approval](images/78_Terraform_CICD_-After_manual-aproval-Pipeline_complete.png)
+
+#### EC2 resources created
+Once approval is granted, the EC2 resources are created and visible in the AWS console.
+
+![Terraform CICD EC2 created in AWS](images/79_Terraform_CICD-EC2-created-at-AWS.png)
+
+#### Destroy EC2 with manual approval
+The destroy workflow also uses a GitHub Actions manual trigger and approval gate to prevent accidental deletes.
+
+![Terraform CICD manual start destroy](images/80_Terraform_CICD_Manual-start-destroy-aws-resource.png)
+
+![Terraform CICD delete resource waiting user review](images/81_Terraform_CICD_Delete-resource-wating-user-review.png)
+
+![Terraform CICD destroy resource after manual approval](images/82_Terraform_CICD_Destroy-resource-after-manual-approval.png)
+
+This section documents the live CICD workflow behavior for the EC2 project, showing that both create and destroy operations are executed through GitHub Actions with explicit user approval and review.
