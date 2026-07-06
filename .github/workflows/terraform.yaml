@@ -24,6 +24,9 @@ jobs:
         with:
           terraform_version: 1.0.1
           terraform_wrapper: false
+          
+      - name: Check Terraform version
+        run: terraform version 
 
       - name: Terraform Init
         id: init
