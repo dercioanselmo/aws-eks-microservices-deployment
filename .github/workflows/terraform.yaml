@@ -1,5 +1,9 @@
 name: "TF-04_EC2_Basic"
 
+permissions:
+  contents: read
+  issues: write
+
 on:
   push:
     branches:
