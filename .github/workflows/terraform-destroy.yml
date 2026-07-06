@@ -50,7 +50,7 @@ jobs:
       - name: Terraform Destroy (confirmed)
         run: terraform destroy -auto-approve
 
-      - name: Notify: create issue about destroy
+      - name: "Notify: create issue about destroy"
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
