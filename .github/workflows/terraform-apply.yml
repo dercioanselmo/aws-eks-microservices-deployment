@@ -41,7 +41,7 @@ jobs:
       - name: Terraform Apply (confirmed)
         run: terraform apply -auto-approve
 
-      - name: Notify: create issue about apply
+      - name: "Notify: create issue about apply"
         uses: actions/github-script@v6
         with:
           script: |
