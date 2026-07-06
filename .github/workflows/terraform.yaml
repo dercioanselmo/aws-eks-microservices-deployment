@@ -45,3 +45,13 @@ jobs:
         with:
           name: tfplan-04-ec2-basic
           path: 04_EC2_Basic/plan.tfplan
+      - name: Request apply approval
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const title = `Terraform plan ready for 04_EC2_Basic`;
+            const body = `@dercioanselmo\n\nA Terraform plan has been generated for the 04_EC2_Basic project. Please review the run and manually trigger the \`TF-04_EC2_Basic-Manual-Apply\` workflow with \`confirm=yes\` if you approve creating resources.\n\nRun details: ${process.env.GITHUB_SERVER_URL}/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            await github.rest.issues.create({ owner, repo, title, body, assignees: ['dercioanselmo'] });
