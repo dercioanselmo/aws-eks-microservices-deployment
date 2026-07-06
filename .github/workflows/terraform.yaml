@@ -17,7 +17,7 @@ jobs:
         working-directory: 04_EC2_Basic
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -41,7 +41,7 @@ jobs:
         run: |
           terraform plan -out=plan.tfplan -no-color
       - name: Upload plan artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tfplan-04-ec2-basic
           path: 04_EC2_Basic/plan.tfplan
