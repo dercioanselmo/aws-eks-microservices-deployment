@@ -79,6 +79,21 @@ jobs:
           name: tfplan-04-ec2-basic
           path: .
 
+      - name: Locate and move plan file
+        run: |
+          set -e
+          echo "Searching for plan.tfplan under $GITHUB_WORKSPACE"
+          PLAN_PATH=$(find "$GITHUB_WORKSPACE" -type f -name 'plan.tfplan' | head -n 1 || true)
+          if [ -z "$PLAN_PATH" ]; then
+            echo "No plan.tfplan found. Listing workspace for debugging:";
+            ls -al "$GITHUB_WORKSPACE" || true;
+            ls -al . || true;
+            exit 1;
+          fi
+          echo "Found plan at: $PLAN_PATH"
+          mv "$PLAN_PATH" ./plan.tfplan
+          echo "Moved plan to $(pwd)/plan.tfplan"
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
