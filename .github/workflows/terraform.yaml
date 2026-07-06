@@ -2,7 +2,6 @@ name: "TF-04_EC2_Basic"
 
 permissions:
   contents: read
-  issues: write
 
 on:
   push:
@@ -10,12 +9,12 @@ on:
       - main
 
 jobs:
-  terraform:
-    name: "TF-04_EC2_Basic"
+  plan:
+    name: "Terraform Plan (04_EC2_Basic)"
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     defaults:
       run:
         working-directory: 04_EC2_Basic
@@ -30,32 +29,54 @@ jobs:
           terraform_wrapper: false
 
       - name: Check Terraform version
-        run: terraform version 
+        run: terraform version
 
       - name: Terraform Init
-        id: init
         run: terraform init
 
-      - name: Terraform Format
-        id: validate
+      - name: Terraform Validate
         run: terraform validate
 
       - name: Terraform Plan
-        id: plan
         run: |
           terraform plan -out=plan.tfplan -no-color
+
       - name: Upload plan artifact
         uses: actions/upload-artifact@v4
         with:
           name: tfplan-04-ec2-basic
           path: 04_EC2_Basic/plan.tfplan
-      - name: Request apply approval
-        uses: actions/github-script@v6
+
+  apply:
+    name: "Terraform Apply (04_EC2_Basic)"
+    needs: plan
+    runs-on: ubuntu-latest
+    environment:
+      name: 04-EC2-Basic-Apply
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    defaults:
+      run:
+        working-directory: 04_EC2_Basic
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const title = `Terraform plan ready for 04_EC2_Basic`;
-            const body = `@dercioanselmo\n\nA Terraform plan has been generated for the 04_EC2_Basic project. Please review the run and manually trigger the \`TF-04_EC2_Basic-Manual-Apply\` workflow with \`confirm=yes\` if you approve creating resources.\n\nRun details: ${process.env.GITHUB_SERVER_URL}/${owner}/${repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-            await github.rest.issues.create({ owner, repo, title, body, assignees: ['dercioanselmo'] });
+          name: tfplan-04-ec2-basic
+          path: .
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.12.2
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve plan.tfplan
