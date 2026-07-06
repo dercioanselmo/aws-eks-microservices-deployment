@@ -38,7 +38,10 @@ jobs:
 
       - name: Terraform Plan
         id: plan
-        run: terraform plan -no-color
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: |
+          terraform plan -out=plan.tfplan -no-color
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan-04-ec2-basic
+          path: 04_EC2_Basic/plan.tfplan
