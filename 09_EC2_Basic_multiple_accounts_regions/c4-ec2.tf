@@ -1,57 +1,18 @@
-# Get Default VPC
-data "aws_vpc" "default" {
-  default = true
-}
+module "deploy_account_b" {
+  source = "./modules/ec2_multi_region"
 
-# Get latest Ubuntu 24.04 LTS AMI
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"]
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
-  }
-}
-
-# Get public subnets
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
+  providers = {
+    aws = aws.account_b
   }
 
-  filter {
-    name   = "default-for-az"
-    values = ["true"]
-  }
-
-  filter {
-    name   = "map-public-ip-on-launch"
-    values = ["true"]
-  }
-}
-
-# Security Group (already created in c5-security-group.tf)
-# Create EC2 Instances with custom names and 50GB storage
-resource "aws_instance" "ec2" {
-  count = length(var.instance_names)
-
-  ami           = data.aws_ami.ubuntu.id
-  instance_type = var.instance_type
-  key_name      = var.key_name
-
-  subnet_id                   = data.aws_subnets.default.ids[0]
-  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
-  associate_public_ip_address = true
-
-  root_block_device {
-    volume_size           = var.root_volume_size
-    volume_type           = "gp3"
-    delete_on_termination = true
-  }
-
-  tags = {
-    Name = var.instance_names[count.index]
-  }
+  instance_names      = var.account_b_instance_names
+  instance_type       = var.account_b_instance_type
+  key_name            = var.account_b_key_name
+  root_volume_size    = var.account_b_root_volume_size
+  security_group_name = "dercio-ec2-ssh-${var.account_b_name}"
+  ssh_cidr_blocks     = var.account_b_ssh_cidr_blocks
+  tags = merge(var.common_tags, {
+    Environment = var.account_b_name
+    Region      = var.account_b_region
+  })
 }
